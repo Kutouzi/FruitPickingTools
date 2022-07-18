@@ -52,5 +52,6 @@ def checkInfo():
         a = int(row['charaID'])
         IDTable.add(a)
     hiatusTable =  set(numList) - set(IDTable)
-    print(hiatusTable)
-    print("have " + hiatusTable.__len__().__str__() + "cow no data")
+    #print(hiatusTable)
+    #print("have " + hiatusTable.__len__().__str__() + "cow no data")
+    return hiatusTable

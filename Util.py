@@ -12,12 +12,6 @@ def checkErrorCode(errorCode:int):
     elif errorCode == 3:
         print("error output.cant output image or movie.")
 
-def randomCharacter():
-    return chr(rd.randint(65,90))
-
-def randomString():
-    return randomCharacter()+randomCharacter()+randomCharacter()+randomCharacter()
-
 def yield_str(chr_start=65,chr_end=90):
     for chs in product(map(chr, range(chr_start, chr_end+1)),repeat=4):
         yield ''.join(chs)
