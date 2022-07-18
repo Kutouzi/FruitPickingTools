@@ -13,7 +13,7 @@ if __name__ == '__main__':
         if hiatusTable.__len__() <= 0:
             break
         if step ==3:
-            tmpStr = str(CheckData.checkInfo().pop())
+            tmpStr = str(hiatusTable.pop())
             if tmpStr.__len__() == 3:
                 IDString = GetURL.getURL(GetURL.randomIDSet(tmpStr))
             else:
