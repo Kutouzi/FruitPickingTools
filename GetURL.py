@@ -1,8 +1,7 @@
 import httpx
 
-import Util as ut
-
 def randomIDSet(hiatusID:str):
+    print("test id: " + hiatusID)
     idSet:set = set()
     for randomFileID1 in range(65,90+1):
         for randomFileID2 in range(48,57+1):
@@ -31,6 +30,7 @@ def getURL(randomIDSet:set):
                 tmp = randomIDSet.pop()
                 data = httpx.get(url + tmp + "/icon/" + tmp + ".png",timeout=5)
                 if data.status_code == 200:
+                    print(tmp)
                     return tmp
                 # else:
                 #     print("no find")
