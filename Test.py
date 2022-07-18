@@ -9,26 +9,13 @@ if __name__ == '__main__':
     # 482, 483, 484, 485, 359, 360, 486, 487, 488, 489, 490, 491, 239, 492, 241,
     # 493, 494, 495, 496, 497, 498, 499}
     hiatusTable = CheckData.checkInfo()
-    while(step == 3):
-        if hiatusTable.__len__() <= 0:
+    while hiatusTable:
+        IDString = GetURL.getURL(GetURL.randomIDSet(f'{hiatusTable.pop():03d}'))
+        print(IDString)
+        if CheckData.checkHiatusID(IDString):
             break
-        if step ==3:
-            tmpStr = str(hiatusTable.pop())
-            if tmpStr.__len__() == 3:
-                IDString = GetURL.getURL(GetURL.randomIDSet(tmpStr))
-            else:
-                IDString = GetURL.getURL(GetURL.randomIDSet("0" + tmpStr))
-            print(IDString)
-            step = 0
-        if step == 0:
-            if CheckData.checkHiatusID(IDString):
-                step = 1
-        if step == 1:
-            CheckData.insertID(IDString)
-            step = 4
-        if step == 4:
-            print(hiatusTable.__len__())
-            step = 3
+        CheckData.insertID(IDString)
+        print(hiatusTable.__len__())
 
 
 
