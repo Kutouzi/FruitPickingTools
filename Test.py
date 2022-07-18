@@ -1,8 +1,9 @@
 import CheckData
 
 if __name__ == '__main__':
+    # CheckData.checkInfo()
     step = 0
-    IDString = "450EL7"
+    IDString = "240E2I"
     if step == 0:
         if CheckData.checkHiatusID(IDString):
             step = 1

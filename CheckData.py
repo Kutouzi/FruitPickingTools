@@ -6,7 +6,6 @@ def checkHiatusID(IDString:str):
         fileID = IDString[3:]
         table = pd.read_csv("./charaMap/charaData.csv",
                             converters={'charaID':str,'charaFileID':str,'favorability':str,'randomCode':str})
-        # charaIDTable = table.loc[['charaID']]
         numList:set = set(range(1,500))
         hiatusTable:set = set()
         IDTable:set = set()
@@ -19,6 +18,7 @@ def checkHiatusID(IDString:str):
             if id == find:
                 print("find")
                 return True
+    print("error data or exiet data")
     return False
 
 def insertID(IDString:str):
@@ -41,3 +41,16 @@ def insertID(IDString:str):
             resultTable = table.sort_values(by='charaID',ascending=True)
             resultTable.to_csv("./charaMap/charaData.csv",index=False)
             print("update table")
+
+def checkInfo():
+    table = pd.read_csv("./charaMap/charaData.csv",
+                        converters={'charaID':str,'charaFileID':str,'favorability':str,'randomCode':str})
+    numList:set = set(range(1,500))
+    hiatusTable:set = set()
+    IDTable:set = set()
+    for index,row in table.iterrows():
+        a = int(row['charaID'])
+        IDTable.add(a)
+    hiatusTable =  set(numList) - set(IDTable)
+    print(hiatusTable)
+    print("have " + hiatusTable.__len__().__str__() + "cow no data")
