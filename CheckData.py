@@ -14,27 +14,6 @@ def checkHiatusID(IDString:str):
         print("error data: " + IDString)
     return False
 
-def insertID(IDString:str):
-    if IDString.__len__() == 6:
-        id = IDString[:3]
-        fileID = IDString[3:]
-        table = pd.read_csv("./charaMap/charaData.csv",
-                            converters={'charaID':str,'charaFileID':str,'favorability':str,'randomCode':str})
-        IDTable:set = set()
-        for index,row in table.iterrows():
-            a = int(row['charaID'])
-            IDTable.add(a)
-        flag = True
-        for i in IDTable:
-            if i == int(id):
-                flag = False
-                break
-        if flag == True:
-            table.loc[table.__len__()+2] = [id,fileID,'','']
-            resultTable = table.sort_values(by='charaID',ascending=True)
-            resultTable.to_csv("./charaMap/charaData.csv",index=False)
-            print("update table")
-
 def checkInfo():
     table = pd.read_csv("./charaMap/charaData.csv",
                         converters={'charaID':str,'charaFileID':str,'favorability':str,'randomCode':str})

@@ -1,8 +1,16 @@
 import CheckData
 import GetURL
+import Util
 
 if __name__ == '__main__':
-    step = 3
+    # table = pd.read_csv("./charaMap/charaData.csv",
+    #                     converters={'charaID':str,'charaFileID':str,'favorability':str,'randomCode':str})
+    # for index,row in table.iterrows():
+    #     if row["charaID"] == '057' and row["favorability"] == '':
+    #         row.at['favorability'] = "040"
+    #         row.at['randomCode'] = "AAAA"
+    #         print(row)
+
     IDString = "262E6A"
     hiatusTable = CheckData.checkInfo()
     while hiatusTable:
@@ -10,7 +18,7 @@ if __name__ == '__main__':
         IDString = GetURL.getURL(GetURL.randomIDSet(f'{hiatusTable.pop():03d}'))
         print(IDString)
         if CheckData.checkHiatusID(IDString):
-            CheckData.insertID(IDString)
+            Util.insertID(IDString)
 
 
 

@@ -1,5 +1,4 @@
-from pathlib import Path
-
+import Util
 import httpx
 import pandas as pd
 
@@ -29,7 +28,7 @@ def getCG(defURL:str,charaID:int,charaFileID:str,resultString:str,favorability:s
                 imageName = it + ".jpg"
                 imageURL = dataURL + "/images/" + imageName
                 image = httpx.get(imageURL).content
-                if saveResource(image,charaID,imageName,favorability) == 0:
+                if Util.saveResource(image,charaID,imageName,favorability) == 0:
                     return 0
                 else:
                     return 3
@@ -39,21 +38,11 @@ def getCG(defURL:str,charaID:int,charaFileID:str,resultString:str,favorability:s
                 movieName = movieCollection.pop() + ".mp4"
                 movieURL = dataURL + "/movie/" + movieName
                 movie = httpx.get(movieURL).content
-                if saveResource(movie,charaID,movieName,favorability) == 0:
+                if Util.saveResource(movie,charaID,movieName,favorability) == 0:
                     return 0
                 else:
                     return 3
             else:
                 return 2
 
-def saveResource(resource,charaID:int,resourceName:str,favorability:str):
-    path = Path("./output/") / charaID.__str__() / favorability
-    try:
-        path.mkdir(parents=True,exist_ok=True)
-    except:
-        print("create dir error " + path.__str__() + favorability)
-    try:
-        (path / (charaID.__str__() + resourceName)).write_bytes(resource)
-    except:
-        print("write file error " + charaID.__str__() + " " + resourceName)
-    return 0
+
