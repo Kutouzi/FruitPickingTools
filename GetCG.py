@@ -4,7 +4,7 @@ import pandas as pd
 
 from io import BytesIO
 
-def getCG(defURL:str, charaID:str, charaFileID:str, randomCode:str, favorability:str, isOldCg:bool):
+def getCG(defURL:str, charaID:str, charaFileID:str, randomCode:str,TRAVERSE_MODE:bool, favorability:str, isOldCg:bool):
     #人物代码+E？？/好感值+？？？？+人物代码
     #例如334E9Z/100TYVH334_R
     #又如334E9Z/040KEBL334_R
@@ -19,30 +19,49 @@ def getCG(defURL:str, charaID:str, charaFileID:str, randomCode:str, favorability
         data = httpx.get(dataURL + "/data.txt",timeout=5)
         if data.status_code == 200:
             print("find " + randomCode)
-            # 更新csv缓存文件
-            Util.insertRandomCode(charaID, charaFileID, favorability, randomCode)
+            if TRAVERSE_MODE:
+                # 更新csv缓存文件
+                Util.insertRandomCode(charaID, charaFileID, favorability, randomCode)
             # 保存cg文件
-            table=pd.read_csv(BytesIO(data.content))
-            imageCollection = set(it for it in table['background'].to_list() if it.startswith('HCG'))
+            table=pd.read_csv(BytesIO(data.content)).fillna('')
+            imageCollection = set(it for it in table['background'] if it.startswith('HCG'))
             if imageCollection.__len__() > 0:
                 for it in imageCollection:
                     imageName = it + ".jpg"
                     imageURL = dataURL + "/images/" + imageName
-                    image = httpx.get(imageURL).content
-                    if Util.saveResource(image,charaID,imageName,favorability) == 0:
-                        return 0
-                    else:
-                        return 3
+                    try:
+                        image = httpx.get(imageURL).content
+                        Util.saveResource(image,charaID,imageName,favorability)
+                    except:
+                        try:
+                            image = httpx.get(imageURL).content
+                            Util.saveResource(image,charaID,imageName,favorability)
+                        except:
+                            try:
+                                image = httpx.get(imageURL).content
+                                Util.saveResource(image,charaID,imageName,favorability)
+                            except:
+                                print("time out 1*3")
+
             else:
-                movieCollection = set(it for it in table['movie'].to_list())
+                movieCollection = set(it.split('_')[0] for it in table['movie'] if it)
                 if movieCollection.__len__() > 0:
-                    movieName = movieCollection.pop() + ".mp4"
-                    movieURL = dataURL + "/movie/" + movieName
-                    movie = httpx.get(movieURL).content
-                    if Util.saveResource(movie,charaID,movieName,favorability) == 0:
-                        return 0
-                    else:
-                        return 3
+                    for it in movieCollection:
+                        movieName = it + ".mp4"
+                        movieURL = dataURL + "/movie/" + movieName
+                        try:
+                            movie = httpx.get(movieURL).content
+                            Util.saveResource(movie,charaID,movieName,favorability)
+                        except:
+                            try:
+                                movie = httpx.get(movieURL).content
+                                Util.saveResource(movie,charaID,movieName,favorability)
+                            except:
+                                try:
+                                    movie = httpx.get(movieURL).content
+                                    Util.saveResource(movie,charaID,movieName,favorability)
+                                except:
+                                    print("time out 1*3")
                 else:
                     return 2
     except:
@@ -52,26 +71,43 @@ def getCG(defURL:str, charaID:str, charaFileID:str, randomCode:str, favorability
             if data.status_code == 200:
                 table=pd.read_csv(BytesIO(data.content))
                 print(randomCode)
-                imageCollection = set(it for it in table['background'].to_list() if it.startswith('HCG'))
+                imageCollection = set(it for it in table['background'] if it.startswith('HCG'))
                 if imageCollection.__len__() > 0:
                     for it in imageCollection:
                         imageName = it + ".jpg"
                         imageURL = dataURL + "/images/" + imageName
-                        image = httpx.get(imageURL).content
-                        if Util.saveResource(image,charaID,imageName,favorability) == 0:
-                            return 0
-                        else:
-                            return 3
+                        try:
+                            image = httpx.get(imageURL).content
+                            Util.saveResource(image,charaID,imageName,favorability)
+                        except:
+                            try:
+                                image = httpx.get(imageURL).content
+                                Util.saveResource(image,charaID,imageName,favorability)
+                            except:
+                                try:
+                                    image = httpx.get(imageURL).content
+                                    Util.saveResource(image,charaID,imageName,favorability)
+                                except:
+                                    print("time out 2*3")
                 else:
-                    movieCollection = set(it for it in table['movie'].to_list())
+                    movieCollection = set(it.split('_')[0] for it in table['movie'] if it)
                     if movieCollection.__len__() > 0:
-                        movieName = movieCollection.pop() + ".mp4"
-                        movieURL = dataURL + "/movie/" + movieName
-                        movie = httpx.get(movieURL).content
-                        if Util.saveResource(movie,charaID,movieName,favorability) == 0:
-                            return 0
-                        else:
-                            return 3
+                        for it in movieCollection:
+                            movieName = it + ".mp4"
+                            movieURL = dataURL + "/movie/" + movieName
+                            try:
+                                movie = httpx.get(movieURL).content
+                                Util.saveResource(movie,charaID,movieName,favorability)
+                            except:
+                                try:
+                                    movie = httpx.get(movieURL).content
+                                    Util.saveResource(movie,charaID,movieName,favorability)
+                                except:
+                                    try:
+                                        movie = httpx.get(movieURL).content
+                                        Util.saveResource(movie,charaID,movieName,favorability)
+                                    except:
+                                        print("time out 2*3")
                     else:
                         return 2
         except:
@@ -81,29 +117,46 @@ def getCG(defURL:str, charaID:str, charaFileID:str, randomCode:str, favorability
                 if data.status_code == 200:
                     table=pd.read_csv(BytesIO(data.content))
                     print(randomCode)
-                    imageCollection = set(it for it in table['background'].to_list() if it.startswith('HCG'))
+                    imageCollection = set(it for it in table['background'] if it.startswith('HCG'))
                     if imageCollection.__len__() > 0:
                         for it in imageCollection:
                             imageName = it + ".jpg"
                             imageURL = dataURL + "/images/" + imageName
-                            image = httpx.get(imageURL).content
-                            if Util.saveResource(image,charaID,imageName,favorability) == 0:
-                                return 0
-                            else:
-                                return 3
+                            try:
+                                image = httpx.get(imageURL).content
+                                Util.saveResource(image,charaID,imageName,favorability)
+                            except:
+                                try:
+                                    image = httpx.get(imageURL).content
+                                    Util.saveResource(image,charaID,imageName,favorability)
+                                except:
+                                    try:
+                                        image = httpx.get(imageURL).content
+                                        Util.saveResource(image,charaID,imageName,favorability)
+                                    except:
+                                        print("time out 3*3")
                     else:
-                        movieCollection = set(it for it in table['movie'].to_list())
+                        movieCollection = set(it.split('_')[0] for it in table['movie'] if it)
                         if movieCollection.__len__() > 0:
-                            movieName = movieCollection.pop() + ".mp4"
-                            movieURL = dataURL + "/movie/" + movieName
-                            movie = httpx.get(movieURL).content
-                            if Util.saveResource(movie,charaID,movieName,favorability) == 0:
-                                return 0
-                            else:
-                                return 3
+                            for it in movieCollection:
+                                movieName = it + ".mp4"
+                                movieURL = dataURL + "/movie/" + movieName
+                                try:
+                                    movie = httpx.get(movieURL).content
+                                    Util.saveResource(movie,charaID,movieName,favorability)
+                                except:
+                                    try:
+                                        movie = httpx.get(movieURL).content
+                                        Util.saveResource(movie,charaID,movieName,favorability)
+                                    except:
+                                        try:
+                                            movie = httpx.get(movieURL).content
+                                            Util.saveResource(movie,charaID,movieName,favorability)
+                                        except:
+                                            print("time out 3*3")
                         else:
                             return 2
             except:
                 print(randomCode + " time out 3")
                 return 1
-
+    return 0
