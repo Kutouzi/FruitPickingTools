@@ -29,10 +29,7 @@ def getURL(randomIDSet:set):
             try:
                 data = httpx.get(url + tmp + "/icon/" + tmp + ".png",timeout=5)
                 if data.status_code == 200:
-                    # print(tmp + " has find")
                     return tmp
-                # else:
-                    # print(tmp + " no find")
             except:
                 print(tmp + " time out 1")
                 try:

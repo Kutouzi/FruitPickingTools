@@ -10,8 +10,8 @@ if __name__ == '__main__':
     #         row.at['favorability'] = "040"
     #         row.at['randomCode'] = "AAAA"
     #         print(row)
-
-    IDString = "262E6A"
+    # print(CheckData.checkHiatusRandomCode().__len__())
+    IDString = ""
     hiatusTable = CheckData.checkInfo()
     while hiatusTable:
         print(hiatusTable.__len__())

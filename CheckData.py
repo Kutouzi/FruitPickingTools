@@ -7,7 +7,7 @@ def checkHiatusID(IDString:str):
         h = checkInfo()
         for id in h:
             if id == find:
-                print("find")
+                print("find " + IDString)
                 return True
         print("exiet data: " + IDString)
     else:
@@ -27,3 +27,12 @@ def checkInfo():
     #print(hiatusTable)
     #print("have " + hiatusTable.__len__().__str__() + "cow no data")
     return hiatusTable
+
+def checkHiatusRandomCode():
+    table = pd.read_csv("./charaMap/charaData.csv",
+                        converters={'charaID':str,'charaFileID':str,'favorability':str,'randomCode':str})
+    hiatusRandomCodeSet:set = set()
+    for index,row in table.iterrows():
+        if row['randomCode'] == '':
+            hiatusRandomCodeSet.add(row['charaID'])
+    return hiatusRandomCodeSet

@@ -18,7 +18,7 @@ def yield_str(chr_start=65,chr_end=90):
     for chs in product(map(chr, range(chr_start, chr_end+1)),repeat=4):
         yield ''.join(chs)
 
-def insertRandomCode(charaID:str,favorability:str,randomCode:str):
+def insertRandomCode(charaID:str,charaFileID:str,favorability:str,randomCode:str):
     if randomCode.__len__() == 4:
         table = pd.read_csv("./charaMap/charaData.csv",
                             converters={'charaID':str,'charaFileID':str,'favorability':str,'randomCode':str})
@@ -27,8 +27,10 @@ def insertRandomCode(charaID:str,favorability:str,randomCode:str):
                 row.at['favorability'] = favorability
                 row.at['randomCode'] = randomCode
                 updateTable(table)
-            if row['charaID'] == charaID and row['favorability'] == favorability:
+            elif row['charaID'] == charaID and row['favorability'] == favorability:
                 row.at['randomCode'] = randomCode
+            elif row['charaID'] == charaID and row['favorability'] != '':
+                table.loc[table.__len__()+2] = [charaID,charaFileID,favorability,randomCode]
                 updateTable(table)
 
 def insertID(IDString:str):
@@ -48,9 +50,7 @@ def insertID(IDString:str):
                 break
         if flag == True:
             table.loc[table.__len__()+2] = [id,fileID,'','']
-            resultTable = table.sort_values(by='charaID',ascending=True)
-            resultTable.to_csv("./charaMap/charaData.csv",index=False)
-            print("update table")
+            updateTable(table)
 
 
 def updateTable(table):
@@ -58,14 +58,14 @@ def updateTable(table):
     resultTable.to_csv("./charaMap/charaData.csv",index=False)
     print("update table")
 
-def saveResource(resource,charaID:int,resourceName:str,favorability:str):
-    path = Path("./output/") / charaID.__str__() / favorability
+def saveResource(resource,charaID:str,resourceName:str,favorability:str):
+    path = Path("./output/") / charaID / favorability
     try:
         path.mkdir(parents=True,exist_ok=True)
     except:
         print("create dir error " + path.__str__() + favorability)
     try:
-        (path / (charaID.__str__() + resourceName)).write_bytes(resource)
+        (path / (charaID + resourceName)).write_bytes(resource)
     except:
-        print("write file error " + charaID.__str__() + " " + resourceName)
+        print("write file error " + charaID + " " + resourceName)
     return 0
