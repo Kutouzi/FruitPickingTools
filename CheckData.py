@@ -1,16 +1,17 @@
 import pandas as pd
 
-def checkHiatusID(hiatusTable:set,IDString:str):
+def checkHiatusID(IDString:str):
     if IDString.__len__() == 6 and IDString[3:4] == 'E':
         id = IDString[:3]
         find = int(id)
-        for id in hiatusTable:
+        h = checkInfo()
+        for id in h:
             if id == find:
                 print("find")
                 return True
-        print("exiet data")
+        print("exiet data: " + IDString)
     else:
-        print("error data")
+        print("error data: " + IDString)
     return False
 
 def insertID(IDString:str):
@@ -37,7 +38,7 @@ def insertID(IDString:str):
 def checkInfo():
     table = pd.read_csv("./charaMap/charaData.csv",
                         converters={'charaID':str,'charaFileID':str,'favorability':str,'randomCode':str})
-    numList:set = set(range(1,473))
+    numList:set = set(range(1,471+1))
     hiatusTable:set = set()
     IDTable:set = set()
     for index,row in table.iterrows():

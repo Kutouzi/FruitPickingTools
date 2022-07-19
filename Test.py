@@ -9,7 +9,7 @@ if __name__ == '__main__':
         print(hiatusTable.__len__())
         IDString = GetURL.getURL(GetURL.randomIDSet(f'{hiatusTable.pop():03d}'))
         print(IDString)
-        if CheckData.checkHiatusID(hiatusTable,IDString):
+        if CheckData.checkHiatusID(IDString):
             CheckData.insertID(IDString)
 
 

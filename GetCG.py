@@ -26,7 +26,7 @@ def getCG(defURL:str,charaID:int,charaFileID:str,resultString:str,favorability:s
         imageCollection = set(it for it in table['background'].to_list() if it.startswith('HCG'))
         if imageCollection.__len__() > 0:
             for it in imageCollection:
-                imageName = it + ".png"
+                imageName = it + ".jpg"
                 imageURL = dataURL + "/images/" + imageName
                 image = httpx.get(imageURL).content
                 if saveResource(image,charaID,imageName,favorability) == 0:
