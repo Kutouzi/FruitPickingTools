@@ -5,6 +5,7 @@ import pandas as pd
 import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor,as_completed
 
+# 此主函数是用于检测漏掉的角色id并更新到缓存csv用的，目前不会用到，请直接执行FruitPickingTools主函数
 if __name__ == '__main__':
     # table = pd.read_csv("./charaMap/charaData.csv",
     #                     converters={'charaID':str,'charaFileID':str,'favorability':str,'randomCode':str})
