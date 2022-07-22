@@ -9,9 +9,8 @@ is_100_ok:bool = False
 
 lock = threading.Lock()
 
-def traversCG(tables):
+def traversCG(tables,TRAVERSE_MODE:bool):
     defURL = r"http://fruful.jp/img/game/chara/event"
-    TRAVERSE_MODE:bool = True
     randomCodeSet:set = set()
     for it in Util.yield_str():
         randomCodeSet.add(it)
