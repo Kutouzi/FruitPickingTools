@@ -15,5 +15,7 @@ if __name__ == '__main__':
 
     tables = pd.read_csv("./charaMap/charaData.csv",
                 converters={'charaID':str,'charaFileID':str,'favorability':str,'randomCode':str})
-    TRAVERSE_MODE:bool = False
-    TraversCG.traversCG(tables,TRAVERSE_MODE)
+    TRAVERSE_MODE:bool = True
+    specifyCharaID = '466'
+    specifyCharaFileID = 'EFI'
+    TraversCG.traversCG(tables,TRAVERSE_MODE,specifyCharaID,specifyCharaFileID)

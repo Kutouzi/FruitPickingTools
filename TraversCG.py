@@ -9,30 +9,47 @@ import GetCG
 import threading
 from loguru import logger
 
-logger.add('./logs/file_{time}.log', format="{name} {level} {message}", level="DEBUG", rotation='5 MB', encoding='utf-8')
+logger.add('./logs/traverslog_{time}.log', format="{name} {level} {message}", level="DEBUG", rotation='5 MB', encoding='utf-8')
 
 charaDict = {'is_40_ok':False,'is_100_ok':False}
 
 lock = threading.Lock()
 
-def traversCG(tables,TRAVERSE_MODE:bool):
+def traversCG(tables,TRAVERSE_MODE:bool,specifyCharaID:str,specifyCharaFileID:str):
     defURL = r"http://fruful.jp/img/game/chara/event"
     # randomCodeSet:set = set()
     # for it in Util.yield_str():
     #     randomCodeSet.add(it)
     if TRAVERSE_MODE:
-        with ThreadPoolExecutor(max_workers=100) as pool:
-            for index,row in tables.iterrows():
-                charaDict['is_40_ok'] = False
-                charaDict['is_100_ok'] = False
-                charaID = row['charaID']
-                charaFileID = row['charaFileID']
-                if row['favorability'] == '' and row['randomCode'] == '':
+        if specifyCharaID == '' and specifyCharaFileID == '':
+            with ThreadPoolExecutor(max_workers=100) as pool:
+                for index,row in tables.iterrows():
+                    charaDict['is_40_ok'] = False
+                    charaDict['is_100_ok'] = False
+                    charaID = row['charaID']
+                    charaFileID = row['charaFileID']
+                    if row['favorability'] == '' and row['randomCode'] == '':
+                        for chunk in chunked(Util.yield_str(),1000):
+                            futures = []
+                            for randomCode in chunk:
+                                futures.append(
+                                    pool.submit(traverseMode,kwargs={"charaID":charaID,"charaFileID":charaFileID,
+                                                                     "randomCode":randomCode,"TRAVERSE_MODE":TRAVERSE_MODE,
+                                                                     "defURL":defURL})
+                                )
+                            list(concurrent.futures.as_completed(futures))
+                            if charaDict.get("is_40_ok") and charaDict.get("is_100_ok"):
+                                logger.info("40 and 100 has find and save to files")
+                                break
+        else:
+            with ThreadPoolExecutor(max_workers=100) as pool:
+                    charaDict['is_40_ok'] = False
+                    charaDict['is_100_ok'] = False
                     for chunk in chunked(Util.yield_str(),1000):
                         futures = []
                         for randomCode in chunk:
                             futures.append(
-                                pool.submit(traverseMode,kwargs={"charaID":charaID,"charaFileID":charaFileID,
+                                pool.submit(traverseMode,kwargs={"charaID":specifyCharaID,"charaFileID":specifyCharaFileID,
                                                                  "randomCode":randomCode,"TRAVERSE_MODE":TRAVERSE_MODE,
                                                                  "defURL":defURL})
                             )
@@ -40,10 +57,6 @@ def traversCG(tables,TRAVERSE_MODE:bool):
                         if charaDict.get("is_40_ok") and charaDict.get("is_100_ok"):
                             logger.info("40 and 100 has find and save to files")
                             break
-                    try:
-                        httpx.get("http://fruful.jp/img/game/chara/graphic/471E62/icon/471E62.png",timeout=5)
-                    except:
-                        logger.warning("get normal resource error.ip may be blocked")
     else:
         noTraverseMode(tables,TRAVERSE_MODE,defURL)
 
