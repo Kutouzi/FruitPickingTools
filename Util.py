@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import pandas as pd
@@ -68,3 +69,9 @@ def saveResource(resource,charaID:str,resourceName:str,favorability:str):
     except:
         print("write file error " + charaID + " " + resourceName)
     return 0
+
+def traverseOutputFile(path:str):
+    aList = []
+    for root, dirs, files in os.walk(path,topdown=False):
+        aList.append(dirs)
+    return set(aList.pop())
