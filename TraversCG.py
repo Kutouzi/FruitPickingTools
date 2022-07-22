@@ -26,7 +26,7 @@ def noTraverseMode(tables,TRAVERSE_MODE:bool,defURL:str):
         randomCode = row['randomCode']
         charaID = row['charaID']
         charaFileID = row['charaFileID']
-        if charaID not in OutputSet:
+        if charaID in OutputSet:
             print(charaID + r" data has exist in ./output")
             continue
         if row['favorability'] != '' and randomCode != '':
