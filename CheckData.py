@@ -1,10 +1,10 @@
 import pandas as pd
 
-def checkHiatusID(IDString:str):
+def checkHiatusID(IDString:str,beginRange:int,endRange:int):
     if IDString.__len__() == 6 and IDString[3:4] == 'E':
         id = IDString[:3]
         find = int(id)
-        h = checkInfo()
+        h = checkInfo(beginRange,endRange)
         for id in h:
             if id == find:
                 print("find " + IDString)
@@ -14,10 +14,10 @@ def checkHiatusID(IDString:str):
         print("error data: " + IDString)
     return False
 
-def checkInfo():
+def checkInfo(beginRange:int,endRange:int):
     table = pd.read_csv("./charaMap/charaData.csv",
                         converters={'charaID':str,'charaFileID':str,'favorability':str,'randomCode':str})
-    numList:set = set(range(1,471+1))
+    numList:set = set(range(beginRange,endRange+1))
     hiatusTable:set = set()
     IDTable:set = set()
     for index,row in table.iterrows():

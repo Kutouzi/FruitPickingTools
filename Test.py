@@ -30,12 +30,14 @@ if __name__ == '__main__':
     #         print(req.result())
 
     IDString = ""
-    hiatusTable = CheckData.checkInfo()
+    beginRange = 471
+    endRange = 474
+    hiatusTable = CheckData.checkInfo(beginRange,endRange)
     while hiatusTable:
         print(hiatusTable.__len__())
         IDString = GetURL.getURL(GetURL.randomIDSet(f'{hiatusTable.pop():03d}'))
         print(IDString)
-        if CheckData.checkHiatusID(IDString):
+        if CheckData.checkHiatusID(IDString,beginRange,endRange):
             Util.insertID(IDString)
 
 
