@@ -1,22 +1,49 @@
+import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
+
+import httpx
+from more_itertools import chunked
 
 import Util
 import GetCG
 import threading
+from loguru import logger
 
-is_40_ok:bool = False
-is_100_ok:bool = False
+logger.add('./logs/file_{time}.log', format="{name} {level} {message}", level="DEBUG", rotation='5 MB', encoding='utf-8')
+
+charaDict = {'is_40_ok':False,'is_100_ok':False}
 
 lock = threading.Lock()
 
 def traversCG(tables,TRAVERSE_MODE:bool):
     defURL = r"http://fruful.jp/img/game/chara/event"
-    randomCodeSet:set = set()
-    for it in Util.yield_str():
-        randomCodeSet.add(it)
+    # randomCodeSet:set = set()
+    # for it in Util.yield_str():
+    #     randomCodeSet.add(it)
     if TRAVERSE_MODE:
         with ThreadPoolExecutor(max_workers=100) as pool:
-            pool.submit(traverseMode,kwargs={"tables":tables,"randomCodeSet":randomCodeSet,"TRAVERSE_MODE":TRAVERSE_MODE,"defURL":defURL})
+            for index,row in tables.iterrows():
+                charaDict['is_40_ok'] = False
+                charaDict['is_100_ok'] = False
+                charaID = row['charaID']
+                charaFileID = row['charaFileID']
+                if row['favorability'] == '' and row['randomCode'] == '':
+                    for chunk in chunked(Util.yield_str(),1000):
+                        futures = []
+                        for randomCode in chunk:
+                            futures.append(
+                                pool.submit(traverseMode,kwargs={"charaID":charaID,"charaFileID":charaFileID,
+                                                                 "randomCode":randomCode,"TRAVERSE_MODE":TRAVERSE_MODE,
+                                                                 "defURL":defURL})
+                            )
+                        list(concurrent.futures.as_completed(futures))
+                        if charaDict.get("is_40_ok") and charaDict.get("is_100_ok"):
+                            logger.info("40 and 100 has find and save to files")
+                            break
+                    try:
+                        httpx.get("http://fruful.jp/img/game/chara/graphic/471E62/icon/471E62.png",timeout=5)
+                    except:
+                        logger.warning("get normal resource error.ip may be blocked")
     else:
         noTraverseMode(tables,TRAVERSE_MODE,defURL)
 
@@ -39,31 +66,23 @@ def noTraverseMode(tables,TRAVERSE_MODE:bool,defURL:str):
         elif row['favorability'] == '0' and randomCode == '0':
             print("the chara no have cg")
 
-def traverseMode(tables,randomCodeSet,TRAVERSE_MODE:bool,defURL):
-    for index,row in tables.iterrows():
-        global is_40_ok
-        global is_100_ok
-        randomCode = ''
-        charaID = row['charaID']
-        charaFileID = row['charaFileID']
-        if row['favorability'] == '' and row['randomCode'] == '':
-            lock.acquire()
-            randomCodeSet.pop()
-            lock.release()
-            print("begin find " + charaID)
-            while(1):
-                if not is_40_ok :
-                    if Util.checkErrorCode(GetCG.getCG(defURL, charaID, charaFileID, randomCode,TRAVERSE_MODE, favorability="040", isOldCg=False)) == 0:
-                        lock.acquire()
-                        is_40_ok = True
-                        lock.release()
-                if not is_100_ok :
+def traverseMode(charaID,charaFileID,randomCode,TRAVERSE_MODE:bool,defURL):
+            # lock.acquire()
+            # randomCode = randomCodeSet.pop()
+            # lock.release()
+            # print("begin find " + charaID)
+            if not charaDict.get("is_40_ok") :
+                if Util.checkErrorCode(GetCG.getCG(defURL, charaID, charaFileID,
+                                                   randomCode,TRAVERSE_MODE, favorability="040", isOldCg=False)) == 0:
                     lock.acquire()
-                    if Util.checkErrorCode(GetCG.getCG(defURL, charaID, charaFileID, randomCode,TRAVERSE_MODE, favorability="100", isOldCg=False)) == 0:
-                        is_100_ok = True
-                        lock.release()
-                if is_40_ok and is_100_ok:
-                    print("40 and 100 has find and save to files")
-                    break
+                    charaDict['is_40_ok'] = True
+                    lock.release()
+            if not charaDict.get("is_100_ok") :
+                if Util.checkErrorCode(GetCG.getCG(defURL, charaID, charaFileID,
+                                                   randomCode,TRAVERSE_MODE, favorability="100", isOldCg=False)) == 0:
+                    lock.acquire()
+                    charaDict['is_100_ok'] = True
+                    lock.release()
+
 
 
