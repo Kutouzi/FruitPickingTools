@@ -9,10 +9,13 @@ def checkErrorCode(errorCode:int):
         return 0
     elif errorCode == 1:
         print("error network.cant get cg.")
+        return 1
     elif errorCode == 2:
         print("error resource.resource is null in server.")
+        return 2
     elif errorCode == 3:
-        print("error random code.")
+        #print("error random code.")
+        return 3
 
 def yield_str(chr_start=65,chr_end=90):
     for chs in product(map(chr, range(chr_start, chr_end+1)),repeat=4):

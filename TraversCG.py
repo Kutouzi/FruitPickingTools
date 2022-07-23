@@ -41,7 +41,7 @@ def traversCG(tables,TRAVERSE_MODE:bool,specifyCharaID:str,specifyCharaFileID:st
             with ThreadPoolExecutor(max_workers=100) as pool:
                     charaDict['is_40_ok'] = False
                     charaDict['is_100_ok'] = False
-                    for chunk in chunked(Util.yield_str(),10):
+                    for chunk in chunked(Util.yield_str(),1000):
                         futures = []
                         for randomCode in chunk:
                             futures.append(

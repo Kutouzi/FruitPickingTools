@@ -22,6 +22,7 @@ def getCG(defURL:str, charaID:str, charaFileID:str, randomCode:str,TRAVERSE_MODE
     retry_count = 3
     for _ in range(retry_count):
         try:
+            logger.info(f"try to test {charaID} at favorability {favorability}. randomCode:{randomCode}")
             data = httpx.get(dataURL + "/data.txt",timeout=5)
             if data.status_code == 200:
                 logger.info(charaID + " favorability:" + favorability +" has find " + randomCode)

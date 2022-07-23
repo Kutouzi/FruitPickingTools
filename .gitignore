@@ -5,8 +5,9 @@
 *.ipr
 *.iws
 
-# cg output
+# cg output and logs
 output/
+logs/
 
 # IntelliJ
 out/
