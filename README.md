@@ -7,6 +7,7 @@
 ```shell
 pip install httpx
 pip install loguru
+pip install pandas
 ```
 ### 工具使用
 
