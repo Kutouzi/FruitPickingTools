@@ -27,7 +27,7 @@ def traversCG(tables,TRAVERSE_MODE:bool,specifyCharaID:str,specifyCharaFileID:st
                     charaID = row['charaID']
                     charaFileID = row['charaFileID']
                     if row['favorability'] == '' and row['randomCode'] == '':
-                        for chunk in chunked(Util.yield_str(),100):
+                        for chunk in chunked(Util.yield_str(),1000):
                             futures = []
                             for randomCode in chunk:
                                 futures.append(
@@ -38,7 +38,7 @@ def traversCG(tables,TRAVERSE_MODE:bool,specifyCharaID:str,specifyCharaFileID:st
                                 logger.info("40 and 100 has find and save to files")
                                 break
         else:
-            with ThreadPoolExecutor(max_workers=10) as pool:
+            with ThreadPoolExecutor(max_workers=100) as pool:
                     charaDict['is_40_ok'] = False
                     charaDict['is_100_ok'] = False
                     for chunk in chunked(Util.yield_str(),10):
