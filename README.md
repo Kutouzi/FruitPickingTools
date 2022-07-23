@@ -6,6 +6,7 @@
 3. 在控制台输入这个
 ```shell
 pip install httpx
+pip install loguru
 ```
 ### 工具使用
 
@@ -39,5 +40,5 @@ pip install httpx
 
 如果不知道randomCode也没关系，使用FruitPickingTools.py会通过顺序组合的方式去遍历服务器获取CG。
 
-必须存在charaData.csv程序才能正常运行，否则会花费大量时间去获取角色代码和randomCode。
+必须存在charaData.csv程序才能正常运行，否则会花费大量时间去获取角色代码和randomCode（100个线程跑满大约13h遍历一个角色）。
 
