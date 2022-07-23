@@ -1,7 +1,5 @@
 import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
-
-import httpx
 from more_itertools import chunked
 
 import Util
@@ -29,29 +27,25 @@ def traversCG(tables,TRAVERSE_MODE:bool,specifyCharaID:str,specifyCharaFileID:st
                     charaID = row['charaID']
                     charaFileID = row['charaFileID']
                     if row['favorability'] == '' and row['randomCode'] == '':
-                        for chunk in chunked(Util.yield_str(),1000):
+                        for chunk in chunked(Util.yield_str(),100):
                             futures = []
                             for randomCode in chunk:
                                 futures.append(
-                                    pool.submit(traverseMode,kwargs={"charaID":charaID,"charaFileID":charaFileID,
-                                                                     "randomCode":randomCode,"TRAVERSE_MODE":TRAVERSE_MODE,
-                                                                     "defURL":defURL})
+                                    pool.submit(traverseMode,charaID,charaFileID,randomCode,TRAVERSE_MODE,defURL)
                                 )
                             list(concurrent.futures.as_completed(futures))
                             if charaDict.get("is_40_ok") and charaDict.get("is_100_ok"):
                                 logger.info("40 and 100 has find and save to files")
                                 break
         else:
-            with ThreadPoolExecutor(max_workers=100) as pool:
+            with ThreadPoolExecutor(max_workers=10) as pool:
                     charaDict['is_40_ok'] = False
                     charaDict['is_100_ok'] = False
-                    for chunk in chunked(Util.yield_str(),1000):
+                    for chunk in chunked(Util.yield_str(),10):
                         futures = []
                         for randomCode in chunk:
                             futures.append(
-                                pool.submit(traverseMode,kwargs={"charaID":specifyCharaID,"charaFileID":specifyCharaFileID,
-                                                                 "randomCode":randomCode,"TRAVERSE_MODE":TRAVERSE_MODE,
-                                                                 "defURL":defURL})
+                                pool.submit(traverseMode,specifyCharaID,specifyCharaFileID,randomCode,TRAVERSE_MODE,defURL)
                             )
                         list(concurrent.futures.as_completed(futures))
                         if charaDict.get("is_40_ok") and charaDict.get("is_100_ok"):

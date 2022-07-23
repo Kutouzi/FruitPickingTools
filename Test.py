@@ -40,6 +40,12 @@ if __name__ == '__main__':
         if CheckData.checkHiatusID(IDString,beginRange,endRange):
             Util.insertID(IDString)
 
+    shortURL = ''
+    charaID =''
+    charaFileID = ''
+    favorability = ''
+    randomCode =''
+    Util.insertRandomCode(charaID,charaFileID,favorability,randomCode)
 
 
 
