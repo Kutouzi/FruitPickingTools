@@ -34,12 +34,17 @@ pip install pandas
 而randomCode只有拥有角色且好感度足够后，触发事件可以看到。
 
 综上，只要知道randomCode，那么直接输入到csv文件内就可不需要大量时间去遍历服务器资源即可获取CG。
-所以如果有全角色大佬请务必联系我。
+
+一般资源文件代码可以在这里查看：https://docs.google.com/spreadsheets/d/1HhOKUkkUped7tCvwsBDg9-gJrYfLtxV5R43kdAda8_A/edit#gid=1264422600
+
+非常感谢各路大佬的支持！
 
 #### 遍历服务器资源
 如果不知道角色代码也没关系，使用Test.py可以遍历服务器找出的角色代码。
 
-如果不知道randomCode也没关系，使用FruitPickingTools.py会通过顺序组合的方式去遍历服务器获取CG。
+如果不知道randomCode也没关系，使用FruitPickingTools.py会通过顺序组合的方式去遍历服务器获取CG。将./var下的var.csv中TRAVERSE_MODE行的value列填1即可开始遍历。
 
-必须存在charaData.csv程序才能正常运行，否则会花费大量时间去获取角色代码和randomCode（100个线程跑满大约13h遍历一个角色）。
+如果你想遍历某个特定ID的角色的randomCode，将specifyCharaID填为charaID，specifyCharaFileID，填为charaFileID，var.csv中有示例。
+
+遍历需注意：最好知道randomCode并填入charaData.csv中，否则会花费大量时间去获取角色代码和randomCode（100个线程跑满大约13h遍历一个角色）。
 
