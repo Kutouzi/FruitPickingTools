@@ -5,7 +5,7 @@ import pandas as pd
 from io import BytesIO
 from loguru import logger
 
-logger.add('./logs/getlog_{time}.log', format="{name} {level} {message}", level="DEBUG", rotation='5 MB', encoding='utf-8')
+#logger.add('./logs/getlog_{time}.log', format="{name} {level} {message}", level="DEBUG", rotation='5 MB', encoding='utf-8')
 
 def getCG(defURL:str, charaID:str, charaFileID:str, randomCode:str,TRAVERSE_MODE:bool, favorability:str, isOldCg:bool):
     #人物代码+E？？/好感值+？？？？+人物代码
@@ -44,7 +44,7 @@ def getCG(defURL:str, charaID:str, charaFileID:str, randomCode:str,TRAVERSE_MODE
                             except:
                                 pass
                         else:
-                            logger.warning(f"获取图像{imageName}请求超时")
+                            logger.warning(f"get image {imageName} timeout")
                     return 0
                 else:
                     movieCollection = set(it.split('_')[0] for it in table['movie'] if it)
@@ -58,7 +58,7 @@ def getCG(defURL:str, charaID:str, charaFileID:str, randomCode:str,TRAVERSE_MODE
                                     Util.saveResource(movie,charaID,movieName,favorability)
                                     break
                                 except:
-                                    logger.warning(f"获取视频{movieName}请求超时")
+                                    logger.warning(f"get movie {movieName} timeout")
                         return 0
                     else:
                         return 2

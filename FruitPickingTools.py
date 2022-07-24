@@ -15,7 +15,15 @@ if __name__ == '__main__':
 
     tables = pd.read_csv("./charaMap/charaData.csv",
                 converters={'charaID':str,'charaFileID':str,'favorability':str,'randomCode':str})
-    TRAVERSE_MODE:bool = True
-    specifyCharaID = '473'
-    specifyCharaFileID = 'E86'
+    varTables = pd.read_csv("./var/var.csv",converters={'var':str,'value':str})
+    TRAVERSE_MODE:bool = False
+    specifyCharaID:str = ''
+    specifyCharaFileID:str = ''
+    for index,row in varTables.iterrows():
+        if row['var'] == 'TRAVERSE_MODE':
+            TRAVERSE_MODE:bool = bool(int(row['value']))
+        if row['var'] == 'specifyCharaID':
+            specifyCharaID = row['value']
+        if row['var'] == 'specifyCharaFileID':
+            specifyCharaFileID = row['value']
     TraversCG.traversCG(tables,TRAVERSE_MODE,specifyCharaID,specifyCharaFileID)

@@ -61,17 +61,17 @@ def noTraverseMode(tables,TRAVERSE_MODE:bool,defURL:str):
         charaID = row['charaID']
         charaFileID = row['charaFileID']
         if charaID in OutputSet:
-            print(charaID + r" data has exist in ./output")
+            logger.warning(charaID + r" data has exist in ./output")
             continue
         if row['favorability'] != '' and randomCode != '':
             if randomCode.__len__() == 4:
                 if not Util.checkErrorCode(GetCG.getCG(defURL, charaID, charaFileID, randomCode,TRAVERSE_MODE, row["favorability"], isOldCg=False)):
-                    print("finish save " + row['favorability'] + " favorability cg" + charaID)
+                    logger.info("finish save " + row['favorability'] + " favorability cg" + charaID)
             elif randomCode.__len__() == 7:
                 if not Util.checkErrorCode(GetCG.getCG(defURL, charaID, charaFileID, randomCode,TRAVERSE_MODE, row["favorability"], isOldCg=True)):
-                    print("finish save " + row["favorability"] +" favorability cg" + charaID)
+                    logger.info("finish save " + row["favorability"] +" favorability cg" + charaID)
         elif row['favorability'] == '0' and randomCode == '0':
-            print("the chara no have cg")
+            logger.info("the chara no have cg")
 
 def traverseMode(charaID,charaFileID,randomCode,TRAVERSE_MODE:bool,defURL):
             # lock.acquire()
