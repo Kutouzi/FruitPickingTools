@@ -35,7 +35,7 @@ pip install pandas
 
 综上，只要知道randomCode，那么直接输入到csv文件内就可不需要大量时间去遍历服务器资源即可获取CG。
 
-一般资源文件代码可以在这里查看：https://docs.google.com/spreadsheets/d/1HhOKUkkUped7tCvwsBDg9-gJrYfLtxV5R43kdAda8_A/edit#gid=1264422600
+一般资源文件代码可以在这里查看：https://docs.google.com/spreadsheets/d/1HhOKUkkUped7tCvwsBDg9-gJrYfLtxV5R43kdAda8_A/edit#gid=0
 
 非常感谢各路大佬的支持！
 
