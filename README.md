@@ -14,7 +14,7 @@ pip install pandas
 #### 获取角色信息
 角色资源路径信息，主要有四个项构成charaID,charaFileID,favorability,randomCode。其中charaID加charaFileID合称为角色代码。
 
-例如一个角色的资源位置为：https://fruful.jp/img/game/chara/event/334E9Z/100TYVH334_R/HCG001.jpg。
+例如一个角色的资源位置为：https://fruful.jp/img/game/chara/event/334E9Z/100TYVH334_R/images/HCG001.jpg。
 
 那么可以拆分为四个部分。
 
