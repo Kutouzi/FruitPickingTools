@@ -73,6 +73,21 @@ def saveResource(resource,charaID:str,resourceName:str,favorability:str):
         print("write file error " + charaID + " " + resourceName)
     return 0
 
+def saveSTResource(resource,charaID:str,resourceName:str,isHighPixel:bool):
+    if isHighPixel:
+        path = Path("./outputst/") / charaID / 'st'
+    else:
+        path = Path("./outputst/") / charaID / 'full'
+    try:
+        path.mkdir(parents=True,exist_ok=True)
+    except:
+        print("create dir error " + path.__str__())
+    try:
+        (path / (resourceName)).write_bytes(resource)
+    except:
+        print("write file error " + charaID + " " + resourceName)
+    return 0
+
 def traverseOutputFile(path:str):
     aList = []
     for root, dirs, files in os.walk(path,topdown=False):

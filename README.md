@@ -1,5 +1,12 @@
 ## FruitPickingTools
 一个可爬取ふるーつふるきゅーとCG的工具，扩展后也可以用来爬取其他如立绘等资源
+
+目前有的功能：
+1. 获取角色CG和MV储存于“./output”
+2. 获取角色立绘和高清立绘
+3. 猜测未知角色ID
+4. 猜测角色Hscene特殊码
+
 ### 环境搭建
 1. 下载python3.9并配置环境变量（如果你不会，可以直接搜索Anaconda3安装完直接配置好）
 2. 下载并安装pip
@@ -40,7 +47,7 @@ pip install pandas
 非常感谢各路大佬的支持！
 
 #### 遍历服务器资源
-如果不知道角色代码也没关系，使用Test.py可以遍历服务器找出的角色代码。
+如果不知道角色代码也没关系，使用FruitPickingChara.py可以遍历服务器找出的角色代码。
 
 如果不知道randomCode也没关系，使用FruitPickingTools.py会通过顺序组合的方式去遍历服务器获取CG。将./var下的var.csv中TRAVERSE_MODE行的value列填1即可开始遍历。
 
@@ -48,3 +55,7 @@ pip install pandas
 
 遍历需注意：最好知道randomCode并填入charaData.csv中，否则会花费大量时间去获取角色代码和randomCode（100个线程跑满大约13h遍历一个角色）。
 
+#### 获取角色立绘
+如果你想获取角色的立绘，使用FruitPickingStand.py。它会获取服务器角色立绘和高清立绘，并储存在当前目录下outputst，以"./角色代码/普通或高清立绘/进化前或后/"路径存放。
+
+它只可以遍历charaMap下charaData.csv中存在charaID和charaFileID的角色

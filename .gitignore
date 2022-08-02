@@ -8,6 +8,7 @@
 # cg output and logs
 output/
 logs/
+outputst/
 
 # IntelliJ
 out/

@@ -5,8 +5,6 @@ import pandas as pd
 from io import BytesIO
 from loguru import logger
 
-#logger.add('./logs/getlog_{time}.log', format="{name} {level} {message}", level="DEBUG", rotation='5 MB', encoding='utf-8')
-
 def getCG(defURL:str, charaID:str, charaFileID:str, randomCode:str,TRAVERSE_MODE:bool, favorability:str, isOldCg:bool):
     #人物代码+E？？/好感值+？？？？+人物代码
     #例如334E9Z/100TYVH334_R

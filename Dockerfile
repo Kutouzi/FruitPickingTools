@@ -11,6 +11,7 @@ VOLUME ["/usr/src/fruit/output/"]
 VOLUME ["/usr/src/fruit/logs/"]
 VOLUME ["/usr/src/fruit/charaMap/"]
 VOLUME ["/usr/src/fruit/var/"]
+VOLUME ["/usr/src/fruit/outputst/"]
 
 EXPOSE 80/tcp
 
