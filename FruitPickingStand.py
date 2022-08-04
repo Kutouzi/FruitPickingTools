@@ -27,3 +27,4 @@ if __name__ == '__main__':
             continue
         if not GetST.getST(defURL, charaID, charaFileID):
             logger.info("finish save " + charaID +" stand")
+            continue

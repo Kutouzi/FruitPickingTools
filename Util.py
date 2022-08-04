@@ -75,9 +75,9 @@ def saveResource(resource,charaID:str,resourceName:str,favorability:str):
 
 def saveSTResource(resource,charaID:str,resourceName:str,isHighPixel:bool):
     if isHighPixel:
-        path = Path("./outputst/") / charaID / 'st'
+        path = Path("./outputst/") / charaID / Path("st")
     else:
-        path = Path("./outputst/") / charaID / 'full'
+        path = Path("./outputst/") / charaID / Path('full')
     try:
         path.mkdir(parents=True,exist_ok=True)
     except:
