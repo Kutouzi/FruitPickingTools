@@ -10,13 +10,6 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="\charaMap\charaData_backup.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
         <entry key="\var\var.csv">
           <value>
             <Attribute>
