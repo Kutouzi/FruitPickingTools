@@ -19,6 +19,7 @@ if __name__ == '__main__':
     TRAVERSE_MODE:bool = False
     specifyCharaID:str = ''
     specifyCharaFileID:str = ''
+    startRandomCode:str=''
     for index,row in varTables.iterrows():
         if row['var'] == 'TRAVERSE_MODE':
             TRAVERSE_MODE:bool = bool(int(row['value']))
@@ -26,4 +27,9 @@ if __name__ == '__main__':
             specifyCharaID = row['value']
         if row['var'] == 'specifyCharaFileID':
             specifyCharaFileID = row['value']
-    TraversCG.traversCG(tables,TRAVERSE_MODE,specifyCharaID,specifyCharaFileID)
+        if row['var'] == 'startRandomCode':
+            startRandomCode=row['value']
+            if startRandomCode.__len__() != 4 and not startRandomCode.isalpha():
+                print(r"randomCode invalid")
+                startRandomCode=''
+    TraversCG.traversCG(tables,startRandomCode,TRAVERSE_MODE,specifyCharaID,specifyCharaFileID)
