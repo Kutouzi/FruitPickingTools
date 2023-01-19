@@ -1,5 +1,6 @@
 import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
+
 from more_itertools import chunked
 
 import Util
@@ -13,8 +14,12 @@ charaDict = {'is_40_ok':False,'is_100_ok':False}
 
 lock = threading.Lock()
 
-def traversCG(tables,TRAVERSE_MODE:bool,specifyCharaID:str,specifyCharaFileID:str):
+def traversCG(tables,startRandomCode:str,TRAVERSE_MODE:bool,specifyCharaID:str,specifyCharaFileID:str):
     defURL = r"http://fruful.jp/img/game/chara/event"
+    if startRandomCode != '':
+        argList=[ord(x) for x in list(startRandomCode.upper())]
+    else:
+        argList=list()
     # randomCodeSet:set = set()
     # for it in Util.yield_str():
     #     randomCodeSet.add(it)
@@ -27,7 +32,7 @@ def traversCG(tables,TRAVERSE_MODE:bool,specifyCharaID:str,specifyCharaFileID:st
                     charaID = row['charaID']
                     charaFileID = row['charaFileID']
                     if row['favorability'] == '' and row['randomCode'] == '':
-                        for chunk in chunked(Util.yield_str(),1000):
+                        for chunk in chunked(Util.yield_str(argList),1000):
                             futures = []
                             for randomCode in chunk:
                                 futures.append(
@@ -41,7 +46,7 @@ def traversCG(tables,TRAVERSE_MODE:bool,specifyCharaID:str,specifyCharaFileID:st
             with ThreadPoolExecutor(max_workers=100) as pool:
                     charaDict['is_40_ok'] = False
                     charaDict['is_100_ok'] = False
-                    for chunk in chunked(Util.yield_str(),1000):
+                    for chunk in chunked(Util.yield_str(argList),1000):
                         futures = []
                         for randomCode in chunk:
                             futures.append(

@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 
 import pandas as pd
-from itertools import product
 
 def checkErrorCode(errorCode:int):
     if errorCode == 0:
@@ -17,10 +16,29 @@ def checkErrorCode(errorCode:int):
         #print("error random code.")
         return 3
 
-def yield_str(chr_start=65,chr_end=90):
-    for chs in product(map(chr, range(chr_start, chr_end+1)),repeat=4):
-        yield ''.join(chs)
-
+def yield_str(argList:list):
+    if argList.__len__() == 0:
+        argList=[65,65,65,65]
+    isOnce=True
+    for chs in map(chr, range(argList[0], 90+1)):
+        str=''
+        str+=chs
+        if isOnce:
+            isOnce=False
+        else:
+            argList[1]=65
+            argList[2]=65
+            argList[3]=65
+        for chs in map(chr, range(argList[1], 90+1)):
+            str+=chs
+            for chs in map(chr, range(argList[2], 90+1)):
+                str+=chs
+                for chs in map(chr, range(argList[3], 90+1)):
+                    str+=chs
+                    yield str
+                    str=str[0:3]
+                str=str[0:2]
+            str=str[0:1]
 def insertRandomCode(charaID:str,charaFileID:str,favorability:str,randomCode:str):
     if randomCode.__len__() == 4:
         table = pd.read_csv("./charaMap/charaData.csv",
