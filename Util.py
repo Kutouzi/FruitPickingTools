@@ -48,11 +48,15 @@ def insertRandomCode(charaID:str,charaFileID:str,favorability:str,randomCode:str
                 row.at['favorability'] = favorability
                 row.at['randomCode'] = randomCode
                 updateTable(table)
+                break
             elif row['charaID'] == charaID and row['favorability'] == favorability:
                 row.at['randomCode'] = randomCode
+                updateTable(table)
+                break
             elif row['charaID'] == charaID and row['favorability'] != '':
                 table.loc[table.__len__()+2] = [charaID,charaFileID,favorability,randomCode]
                 updateTable(table)
+                break
 
 def insertID(IDString:str):
     if IDString.__len__() == 6:
@@ -77,7 +81,7 @@ def insertID(IDString:str):
 def updateTable(table):
     resultTable = table.sort_values(by='charaID',ascending=True)
     resultTable.to_csv("./charaMap/charaData.csv",index=False)
-    print("update table")
+    print("table updated")
 
 def saveResource(resource,charaID:str,resourceName:str,favorability:str):
     path = Path("./output/") / charaID / favorability

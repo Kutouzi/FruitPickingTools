@@ -14,7 +14,7 @@ charaDict = {'is_40_ok':False,'is_100_ok':False}
 
 lock = threading.Lock()
 
-def traversCG(tables,startRandomCode:str,TRAVERSE_MODE:bool,specifyCharaID:str,specifyCharaFileID:str):
+def traversCG(tables, startRandomCode:str, TRAVERSE_MODE:bool, specifyCharaID:str, specifyCharaFileID:str, specifyFavorability:str, retryCount:int, silentMode:bool):
     defURL = r"http://fruful.jp/img/game/chara/event"
     if startRandomCode != '':
         argList=[ord(x) for x in list(startRandomCode.upper())]
@@ -36,7 +36,7 @@ def traversCG(tables,startRandomCode:str,TRAVERSE_MODE:bool,specifyCharaID:str,s
                             futures = []
                             for randomCode in chunk:
                                 futures.append(
-                                    pool.submit(traverseMode,charaID,charaFileID,randomCode,TRAVERSE_MODE,defURL)
+                                    pool.submit(traverseMode, charaID, charaFileID, randomCode, TRAVERSE_MODE, defURL, retryCount, silentMode)
                                 )
                             list(concurrent.futures.as_completed(futures))
                             if charaDict.get("is_40_ok") and charaDict.get("is_100_ok"):
@@ -44,22 +44,26 @@ def traversCG(tables,startRandomCode:str,TRAVERSE_MODE:bool,specifyCharaID:str,s
                                 break
         else:
             with ThreadPoolExecutor(max_workers=100) as pool:
-                    charaDict['is_40_ok'] = False
-                    charaDict['is_100_ok'] = False
-                    for chunk in chunked(Util.yield_str(argList),1000):
-                        futures = []
-                        for randomCode in chunk:
-                            futures.append(
-                                pool.submit(traverseMode,specifyCharaID,specifyCharaFileID,randomCode,TRAVERSE_MODE,defURL)
-                            )
-                        list(concurrent.futures.as_completed(futures))
-                        if charaDict.get("is_40_ok") and charaDict.get("is_100_ok"):
-                            logger.info("40 and 100 has find and save to files")
-                            break
+                charaDict['is_40_ok'] = False
+                charaDict['is_100_ok'] = False
+                if specifyFavorability == '040':
+                    charaDict['is_100_ok'] = True
+                if specifyFavorability == '100':
+                    charaDict['is_40_ok'] = True
+                for chunk in chunked(Util.yield_str(argList),1000):
+                    futures = []
+                    for randomCode in chunk:
+                        futures.append(
+                            pool.submit(traverseMode, specifyCharaID, specifyCharaFileID, randomCode, TRAVERSE_MODE, defURL, retryCount, silentMode)
+                        )
+                    list(concurrent.futures.as_completed(futures))
+                    if charaDict.get("is_40_ok") and charaDict.get("is_100_ok"):
+                        logger.info("all has find and save to files")
+                        break
     else:
-        noTraverseMode(tables,TRAVERSE_MODE,defURL)
+        noTraverseMode(tables, TRAVERSE_MODE, defURL, retryCount, silentMode)
 
-def noTraverseMode(tables,TRAVERSE_MODE:bool,defURL:str):
+def noTraverseMode(tables, TRAVERSE_MODE:bool, defURL:str, retryCount:int, silentMode:bool):
     OutputSet = Util.traverseOutputFile("./output")
     for index,row in tables.iterrows():
         randomCode = row['randomCode']
@@ -70,28 +74,28 @@ def noTraverseMode(tables,TRAVERSE_MODE:bool,defURL:str):
             continue
         if row['favorability'] != '' and randomCode != '':
             if randomCode.__len__() == 4:
-                if not Util.checkErrorCode(GetCG.getCG(defURL, charaID, charaFileID, randomCode,TRAVERSE_MODE, row["favorability"], isOldCg=False)):
+                if not Util.checkErrorCode(GetCG.getCG(defURL, charaID, charaFileID, randomCode, TRAVERSE_MODE, retryCount, silentMode, row["favorability"], isOldCg=False)):
                     logger.info("finish save " + row['favorability'] + " favorability cg" + charaID)
             elif randomCode.__len__() == 7:
-                if not Util.checkErrorCode(GetCG.getCG(defURL, charaID, charaFileID, randomCode,TRAVERSE_MODE, row["favorability"], isOldCg=True)):
+                if not Util.checkErrorCode(GetCG.getCG(defURL, charaID, charaFileID, randomCode, TRAVERSE_MODE, retryCount, silentMode, row["favorability"], isOldCg=True)):
                     logger.info("finish save " + row["favorability"] +" favorability cg" + charaID)
         elif row['favorability'] == '0' and randomCode == '0':
             logger.info("the chara no have cg")
 
-def traverseMode(charaID,charaFileID,randomCode,TRAVERSE_MODE:bool,defURL):
+def traverseMode(charaID, charaFileID, randomCode, TRAVERSE_MODE:bool, defURL, retryCount:int, silentMode:bool):
             # lock.acquire()
             # randomCode = randomCodeSet.pop()
             # lock.release()
             # print("begin find " + charaID)
             if not charaDict.get("is_40_ok") :
                 if Util.checkErrorCode(GetCG.getCG(defURL, charaID, charaFileID,
-                                                   randomCode,TRAVERSE_MODE, favorability="040", isOldCg=False)) == 0:
+                                                   randomCode, TRAVERSE_MODE, retryCount, silentMode, favorability="040", isOldCg=False)) == 0:
                     lock.acquire()
                     charaDict['is_40_ok'] = True
                     lock.release()
             if not charaDict.get("is_100_ok") :
                 if Util.checkErrorCode(GetCG.getCG(defURL, charaID, charaFileID,
-                                                   randomCode,TRAVERSE_MODE, favorability="100", isOldCg=False)) == 0:
+                                                   randomCode, TRAVERSE_MODE, retryCount, silentMode, favorability="100", isOldCg=False)) == 0:
                     lock.acquire()
                     charaDict['is_100_ok'] = True
                     lock.release()

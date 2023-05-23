@@ -17,9 +17,12 @@ if __name__ == '__main__':
                 converters={'charaID':str,'charaFileID':str,'favorability':str,'randomCode':str})
     varTables = pd.read_csv("./var/var.csv",converters={'var':str,'value':str})
     TRAVERSE_MODE:bool = False
+    silentMode:bool = False
     specifyCharaID:str = ''
     specifyCharaFileID:str = ''
     startRandomCode:str=''
+    specifyFavorability:str=''
+    retryCount:int=3
     for index,row in varTables.iterrows():
         if row['var'] == 'TRAVERSE_MODE':
             TRAVERSE_MODE:bool = bool(int(row['value']))
@@ -27,9 +30,22 @@ if __name__ == '__main__':
             specifyCharaID = row['value']
         if row['var'] == 'specifyCharaFileID':
             specifyCharaFileID = row['value']
+        if row['var'] == 'specifyFavorability':
+            specifyFavorability = row['value']
+            if specifyFavorability != '100' and specifyFavorability != '040' and specifyFavorability != '':
+                print(r"specifyFavorability value is wrong, it should be 040, 100 or blank'")
+                exit(-1)
+        if row["var"] == 'retryCount':
+            if row['value'] != '':
+                retryCount = int(row['value'])
+                if retryCount <= 0 :
+                    print(r"retryCount value is wrong'")
+                    exit(-1)
         if row['var'] == 'startRandomCode':
             startRandomCode=row['value']
             if startRandomCode.__len__() != 4 and not startRandomCode.isalpha():
                 print(r"randomCode invalid")
                 startRandomCode=''
-    TraversCG.traversCG(tables,startRandomCode,TRAVERSE_MODE,specifyCharaID,specifyCharaFileID)
+        if row['var'] == 'silentMode':
+            silentMode = bool(int(row['value']))
+    TraversCG.traversCG(tables,startRandomCode,TRAVERSE_MODE,specifyCharaID,specifyCharaFileID,specifyFavorability,retryCount,silentMode)

@@ -5,22 +5,19 @@ import pandas as pd
 from io import BytesIO
 from loguru import logger
 
-def getCG(defURL:str, charaID:str, charaFileID:str, randomCode:str,TRAVERSE_MODE:bool, favorability:str, isOldCg:bool):
-    #人物代码+E？？/好感值+？？？？+人物代码
-    #例如334E9Z/100TYVH334_R
-    #又如334E9Z/040KEBL334_R
-    #前半段可直接打开面板就能看，结构为数字ID+E+两个字符（0-9或A-Z）
-    #后半段结构为好感值（一般有两个分别为40好感时和100好感时hs）+四个字符（A-Z）+人物代码+_R
+def getCG(defURL:str, charaID:str, charaFileID:str, randomCode:str, TRAVERSE_MODE:bool, retryCount:int, silentMode:bool, favorability:str, isOldCg:bool):
     #logger.info("now is " +charaID + " " + randomCode + " favorability:" + favorability)
     if isOldCg:
         dataURL = defURL + "/" + charaID.__str__() + charaFileID + "/" + favorability + randomCode + "_R"
     else:
         dataURL = defURL + "/" + charaID.__str__() + charaFileID + "/" + favorability + randomCode + charaID.__str__() + "_R"
-
-    retry_count = 3
-    for _ in range(retry_count):
+    if silentMode == True:
+        if len(set(list(randomCode))) == 1:
+            logger.warning(f"now, traverse progress is { randomCode }/ZZZZ ")
+    for _ in range(retryCount):
         try:
-            logger.info(f"try to test {charaID} at favorability {favorability}. randomCode:{randomCode}")
+            if silentMode == False:
+                logger.info(f"try to test {charaID} at favorability {favorability}. randomCode:{randomCode}")
             data = httpx.get(dataURL + "/data.txt",timeout=5)
             if data.status_code == 200:
                 logger.info(charaID + " favorability:" + favorability +" has find " + randomCode)
@@ -34,7 +31,7 @@ def getCG(defURL:str, charaID:str, charaFileID:str, randomCode:str,TRAVERSE_MODE
                     for it in imageCollection:
                         imageName = it + ".jpg"
                         imageURL = dataURL + "/images/" + imageName
-                        for count in range(retry_count):
+                        for count in range(retryCount):
                             try:
                                 image = httpx.get(imageURL).content
                                 Util.saveResource(image,charaID,imageName,favorability)
@@ -50,7 +47,7 @@ def getCG(defURL:str, charaID:str, charaFileID:str, randomCode:str,TRAVERSE_MODE
                         for it in movieCollection:
                             movieName = it + ".mp4"
                             movieURL = dataURL + "/movie/" + movieName
-                            for count in range(retry_count):
+                            for count in range(retryCount):
                                 try:
                                     movie = httpx.get(movieURL).content
                                     Util.saveResource(movie,charaID,movieName,favorability)
@@ -60,6 +57,8 @@ def getCG(defURL:str, charaID:str, charaFileID:str, randomCode:str,TRAVERSE_MODE
                         return 0
                     else:
                         return 2
+            if data.status_code == 403:
+                break
         except:
-            pass
+            logger.warning(f"randomCode:{randomCode} request timeout, retry {_ + 1}")
     return 3
