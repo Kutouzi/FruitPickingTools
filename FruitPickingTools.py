@@ -22,7 +22,7 @@ if __name__ == '__main__':
     specifyCharaFileID:str = ''
     startRandomCode:str=''
     specifyFavorability:str=''
-    retryCount:int=3
+    retryCount:int=6
     for index,row in varTables.iterrows():
         if row['var'] == 'TRAVERSE_MODE':
             TRAVERSE_MODE:bool = bool(int(row['value']))
