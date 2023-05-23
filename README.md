@@ -46,7 +46,7 @@ pip install pandas
 
 一般资源文件代码可以在这里查看：https://docs.google.com/spreadsheets/d/1HhOKUkkUped7tCvwsBDg9-gJrYfLtxV5R43kdAda8_A/edit#gid=0
 
-非常感谢各路大佬的支持！
+非常感谢各位大佬的支持！
 
 #### 获取角色立绘
 如果你想获取角色的立绘，使用FruitPickingStand.py。它会获取服务器角色立绘和高清立绘，并储存在当前目录下outputst，以"./角色代码/普通或高清立绘/进化前或后/"路径存放。
@@ -67,4 +67,16 @@ pip install pandas
 如果你想从某一个特定的randomCode开始往后遍历，将./var下的var.csv中，startRandomCode填为你想要的randomCode，var.csv中有示例。（注意：如果你不想这样做，请留空或填写AAAA）
 
 遍历需注意：最好知道randomCode并填入charaData.csv中，否则会花费大量时间去获取角色代码和randomCode（100个线程跑满大约13h遍历一个角色）。
+
+### 附：关于var.csv文件说明
+
+| 变量                | 类型   | 说明                                                            |
+| ------------------- | ------ |---------------------------------------------------------------|
+| TRAVERSE_MODE       | bool   | 0表示关闭遍历randomCode功能，1表示开启，其他无效                                |
+| specifyCharaID      | string | 请输入要遍历角色的CharaID，详细看**获取角色信息**部分的说明                           |
+| specifyCharaFileID  | string | 请输入要遍历角色的charaFileID，详细看**获取角色信息**部分的说明                       |
+| specifyFavorability | string | 请指定要遍历角色的好感度，可以指定为040或100，留空则两种都遍历                            |
+| retryCount          | int    | 每个randomCode发送请求的次数，一般为3~6较好，数值越高越能弥补网络波动从而稳定获得randomCode     |
+| startRandomCode     | string | 输入从哪里开始遍历，如果为AAAA，则从AAAA开始到ZZZZ依次遍历，如果为BDFC，则从BDFC开始到ZZZZ依次遍历 |
+| silentMode          | bool   | 0表示开启输出遍历日志信息（info级）模式，1表示关闭                                  |
 
