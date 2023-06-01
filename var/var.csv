@@ -1,8 +1,8 @@
 var,value
 TRAVERSE_MODE,0
-specifyCharaID,600
-specifyCharaFileID,ECW
-specifyFavorability,100
+specifyCharaID,602
+specifyCharaFileID,E29
+specifyFavorability,
 retryCount,6
 startRandomCode,AAAA
 silentMode,1
