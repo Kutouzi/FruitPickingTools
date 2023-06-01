@@ -40,7 +40,7 @@ def traversCG(tables, startRandomCode:str, TRAVERSE_MODE:bool, specifyCharaID:st
                                 )
                             list(concurrent.futures.as_completed(futures))
                             if charaDict.get("is_40_ok") and charaDict.get("is_100_ok"):
-                                logger.info("40 and 100 has find and save to files")
+                                logger.info("all tasks have been completed and saved to file")
                                 break
         else:
             with ThreadPoolExecutor(max_workers=100) as pool:
@@ -58,7 +58,7 @@ def traversCG(tables, startRandomCode:str, TRAVERSE_MODE:bool, specifyCharaID:st
                         )
                     list(concurrent.futures.as_completed(futures))
                     if charaDict.get("is_40_ok") and charaDict.get("is_100_ok"):
-                        logger.info("all has find and save to files")
+                        logger.info("all tasks have been completed and saved to file")
                         break
     else:
         noTraverseMode(tables, TRAVERSE_MODE, defURL, retryCount, silentMode)
@@ -75,12 +75,12 @@ def noTraverseMode(tables, TRAVERSE_MODE:bool, defURL:str, retryCount:int, silen
         if row['favorability'] != '' and randomCode != '':
             if randomCode.__len__() == 4:
                 if not Util.checkErrorCode(GetCG.getCG(defURL, charaID, charaFileID, randomCode, TRAVERSE_MODE, retryCount, silentMode, row["favorability"], isOldCg=False)):
-                    logger.info("finish save " + row['favorability'] + " favorability cg" + charaID)
+                    logger.info("favorability:" + row['favorability'] + ", charaID:"+charaID + ", Hscene have been saved" )
             elif randomCode.__len__() == 7:
                 if not Util.checkErrorCode(GetCG.getCG(defURL, charaID, charaFileID, randomCode, TRAVERSE_MODE, retryCount, silentMode, row["favorability"], isOldCg=True)):
-                    logger.info("finish save " + row["favorability"] +" favorability cg" + charaID)
+                    logger.info("favorability:" + row['favorability'] + ", charaID:"+charaID + ", Hscene have been saved")
         elif row['favorability'] == '0' and randomCode == '0':
-            logger.info("the chara no have cg")
+            logger.info("this character does not have a cg")
 
 def traverseMode(charaID, charaFileID, randomCode, TRAVERSE_MODE:bool, defURL, retryCount:int, silentMode:bool):
             # lock.acquire()

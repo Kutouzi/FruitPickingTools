@@ -26,5 +26,5 @@ if __name__ == '__main__':
             logger.warning(charaID + r" data has exist in ./outputst")
             continue
         if not GetST.getST(defURL, charaID, charaFileID):
-            logger.info("finish save " + charaID +" stand")
+            logger.info("saved " + charaID +" stand")
             continue

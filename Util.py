@@ -7,10 +7,10 @@ def checkErrorCode(errorCode:int):
     if errorCode == 0:
         return 0
     elif errorCode == 1:
-        print("error network.cant get cg.")
+        print("network error, please check the local network")
         return 1
     elif errorCode == 2:
-        print("error resource.resource is null in server.")
+        print("resource error, the resource is empty on the server")
         return 2
     elif errorCode == 3:
         #print("error random code.")
@@ -81,18 +81,18 @@ def insertID(IDString:str):
 def updateTable(table):
     resultTable = table.sort_values(by='charaID',ascending=True)
     resultTable.to_csv("./charaMap/charaData.csv",index=False)
-    print("table updated")
+    print("charaData.csv table updated")
 
 def saveResource(resource,charaID:str,resourceName:str,favorability:str):
     path = Path("./output/") / charaID / favorability
     try:
         path.mkdir(parents=True,exist_ok=True)
     except:
-        print("create dir error " + path.__str__() + favorability)
+        print("error creating directory: " + path.__str__() + favorability)
     try:
         (path / (resourceName)).write_bytes(resource)
     except:
-        print("write file error " + charaID + " " + resourceName)
+        print("error writing to file: " + charaID + " " + resourceName)
     return 0
 
 def saveSTResource(resource,charaID:str,resourceName:str,isHighPixel:bool):
@@ -103,11 +103,11 @@ def saveSTResource(resource,charaID:str,resourceName:str,isHighPixel:bool):
     try:
         path.mkdir(parents=True,exist_ok=True)
     except:
-        print("create dir error " + path.__str__())
+        print("error creating directory: " + path.__str__())
     try:
         (path / (resourceName)).write_bytes(resource)
     except:
-        print("write file error " + charaID + " " + resourceName)
+        print("error writing to file: " + charaID + " " + resourceName)
     return 0
 
 def traverseOutputFile(path:str):

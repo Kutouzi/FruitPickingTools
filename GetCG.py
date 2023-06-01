@@ -13,14 +13,14 @@ def getCG(defURL:str, charaID:str, charaFileID:str, randomCode:str, TRAVERSE_MOD
         dataURL = defURL + "/" + charaID.__str__() + charaFileID + "/" + favorability + randomCode + charaID.__str__() + "_R"
     if silentMode == True:
         if len(set(list(randomCode))) == 1:
-            logger.warning(f"now, traverse progress is { randomCode }/ZZZZ ")
+            logger.warning(f"now, traverse progress is { randomCode }/ZZZZ at favorability {favorability}")
     for _ in range(retryCount):
         try:
             if silentMode == False:
                 logger.info(f"try to test {charaID} at favorability {favorability}. randomCode:{randomCode}")
             data = httpx.get(dataURL + "/data.txt",timeout=5)
             if data.status_code == 200:
-                logger.info(charaID + " favorability:" + favorability +" has find " + randomCode)
+                logger.info("charaID: " + charaID + ", favorability:" + favorability +", data has been found, the randomCode is " + randomCode)
                 if TRAVERSE_MODE:
                     # 更新csv缓存文件
                     Util.insertRandomCode(charaID, charaFileID, favorability, randomCode)
@@ -60,5 +60,5 @@ def getCG(defURL:str, charaID:str, charaFileID:str, randomCode:str, TRAVERSE_MOD
             if data.status_code == 403:
                 break
         except:
-            logger.warning(f"randomCode:{randomCode} request timeout, retry {_ + 1}")
+            logger.warning(f"favorability {favorability} and randomCode:{randomCode}, request timeout, {_ + 1} retry")
     return 3
