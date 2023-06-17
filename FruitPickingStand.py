@@ -5,6 +5,8 @@ import GetST
 import Util
 from loguru import logger
 
+logger.add('./logs/FruitPickingStandLog_{time}.log', format="{name} {level} {message}", level="DEBUG", rotation='5 MB', encoding='utf-8')
+
 if __name__ == '__main__':
     if os.path.exists("./outputst"):
         pass
@@ -23,8 +25,7 @@ if __name__ == '__main__':
         charaID = row['charaID']
         charaFileID = row['charaFileID']
         if charaID in OutputSet:
-            logger.warning(charaID + r" data has exist in ./outputst")
-            continue
-        if not GetST.getST(defURL, charaID, charaFileID):
-            logger.info("saved " + charaID +" stand")
-            continue
+            logger.warning(charaID + " data has exist in ./outputst")
+        else:
+            if not GetST.getST(defURL, charaID, charaFileID):
+                logger.info("saved " + charaID +" stand")

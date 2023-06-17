@@ -1,8 +1,10 @@
 import os
 import pandas as pd
 import TraversCG
+from loguru import logger
 
-# 用于遍历或者下载cg到本地的主函数，TRAVERSE_MODE只供开发者使用，正常使用请设置为False
+logger.add('./logs/FruitPickingToolsLog_{time}.log', format="{name} {level} {message}", level="DEBUG", rotation='5 MB', encoding='utf-8')
+
 if __name__ == '__main__':
     if os.path.exists("./output"):
         pass

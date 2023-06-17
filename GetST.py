@@ -8,7 +8,7 @@ def getST(defURL:str, charaID:str, charaFileID:str):
     evoCharaFileID = list(charaFileID)
     evoCharaFileID[0] = 'T'
     evoCharaFileID = ''.join(evoCharaFileID)
-    retry_count = 3
+    retry_count = 6
     isSaved00 = False
     isSaved01 = False
     # TODO 此处高冗余，待简化

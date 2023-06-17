@@ -8,8 +8,6 @@ import GetCG
 import threading
 from loguru import logger
 
-logger.add('./logs/traverslog_{time}.log', format="{name} {level} {message}", level="DEBUG", rotation='5 MB', encoding='utf-8')
-
 charaDict = {'is_40_ok':False,'is_100_ok':False}
 
 lock = threading.Lock()
