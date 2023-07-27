@@ -95,11 +95,11 @@ def saveResource(resource,charaID:str,resourceName:str,favorability:str):
         print("error writing to file: " + charaID + " " + resourceName)
     return 0
 
-def saveSTResource(resource,charaID:str,resourceName:str,isHighPixel:bool):
+def saveSTResource(resource,charaID:str,CharaFileID:str,resourceName:str,isHighPixel:bool):
     if isHighPixel:
-        path = Path("./outputst/") / charaID / Path("st")
+        path = Path("./outputst/") / Path(charaID + CharaFileID) / Path("st")
     else:
-        path = Path("./outputst/") / charaID / Path('full')
+        path = Path("./outputst/") / Path(charaID + CharaFileID) / Path('full')
     try:
         path.mkdir(parents=True,exist_ok=True)
     except:

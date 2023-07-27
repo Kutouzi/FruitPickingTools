@@ -24,7 +24,7 @@ if __name__ == '__main__':
     for index,row in tables.iterrows():
         charaID = row['charaID']
         charaFileID = row['charaFileID']
-        if charaID in OutputSet:
+        if charaID+charaFileID in OutputSet:
             logger.warning(charaID + " data has exist in ./outputst")
         else:
             if not GetST.getST(defURL, charaID, charaFileID):

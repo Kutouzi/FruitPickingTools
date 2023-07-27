@@ -30,8 +30,8 @@ if __name__ == '__main__':
     #         print(req.result())
 
     IDString = ""
-    beginRange = 522
-    endRange = 525
+    beginRange = 225
+    endRange = 225
     hiatusTable = CheckData.checkInfo(beginRange,endRange)
     while hiatusTable:
         print(hiatusTable.__len__())
