@@ -35,7 +35,7 @@ def testURL(headURL:str,tableIdentity:str,hashCode:str,retryCount:int,tables):
                 lock.acquire()
                 FruitPickingWeapons.foundFlag = True
                 image = data.content
-                saveResource(image,imageName)
+                saveResource(image,imageName,Path("./outputwp/"))
                 insertTable(tableIdentity,hashCode,tables)
                 lock.release()
                 return hashCode
@@ -45,6 +45,20 @@ def testURL(headURL:str,tableIdentity:str,hashCode:str,retryCount:int,tables):
         except:
             logger.warning(f"tableIdentity: {tableIdentity} and hashCode:{hashCode}, request timeout, {_ + 1} retry")
     return ''
+
+def requestURL(headURL:str,tableIdentity:str,weaponID:str,hashCode:str,retryCount:int):
+    for _ in range(retryCount):
+        try:
+            imageName = tableIdentity + weaponID + hashCode + ".png"
+            data = httpx.get(headURL + imageName,timeout=5)
+            if data.status_code == 200:
+                image = data.content
+                saveResource(image,imageName,Path("./outputwpf/"))
+            if data.status_code == 403:
+                logger.warning("not found resource at " + hashCode)
+                break
+        except:
+            logger.warning(f"tableIdentity: {tableIdentity} and hashCode:{hashCode}, request timeout, {_ + 1} retry")
 
 def hashCodeSetConstructor(hiatusID:str):
     codeSet:set = set()
@@ -100,11 +114,9 @@ def loopFunciton(hashCode,headURL,tableIdentity,retryCount,tables):
         else:
             logger.info("found hashCode is "+ hashCodeString + " at " + hashCode)
 
-def saveResource(image,imageName:str):
-    path = Path("./outputwp/")
+def saveResource(image,imageName:str,path:Path):
     try:
         path.mkdir(parents=True,exist_ok=True)
-
     except:
         logger.error("error creating directory: " + path.__str__())
     try:
@@ -115,11 +127,12 @@ def saveResource(image,imageName:str):
 
 if __name__ == '__main__':
     #创建输出图像的文件夹
-    if os.path.exists("./outputwp") and os.path.exists("./var"):
+    if os.path.exists("./outputwp") and os.path.exists("./var") and os.path.exists("./outputwpf"):
         pass
     else:
         try:
             os.mkdir("./outputwp")
+            os.mkdir("./outputwpf")
             os.mkdir("./var")
         except:
             logger.error("cant create directory. please check permissions.")
@@ -138,8 +151,11 @@ if __name__ == '__main__':
     weaponID =''
     hashCode =''
     tables=''
+    TRAVERSE_MODE:bool = False
     #读取配置文件
     for index,row in varTables.iterrows():
+        if row['var'] == 'TRAVERSE_MODE':
+            TRAVERSE_MODE = bool(int(row['value']))
         if row['var'] == 'idBeginRange':
             idBeginRange = int(row['value'])
         if row['var'] == 'idEndRange':
@@ -161,29 +177,41 @@ if __name__ == '__main__':
     if retryCount <=0 :
         logger.warning("config file './var/weaponVar.csv' retryCount value too is too small. Has been reset to default.")
         retryCount = 6
-    #创建表格，并读取内容
-    if tableIdentity == 'C':
-        tables = pd.read_csv("./weaponMap/weaponData_C.csv",
-                              converters={'identity':str,'weaponID':str,'hashCode':str})
-    if tableIdentity == 'W':
-        tables = pd.read_csv("./weaponMap/weaponData_W.csv",
-                              converters={'identity':str,'weaponID':str,'hashCode':str})
 
-    hiatusTable = checkInfo(idBeginRange,idEndRange,tables)
-    logger.info("The number of missing IDs is " + hiatusTable.__len__().__str__())
-    #判断标识符进行操作
-    if tableIdentity == 'C' or tableIdentity == 'W':
-        while hiatusTable.__len__():
-            temp = f'{hiatusTable.pop():03d}'
-            logger.info('now is ' + temp)
-            hashCodeSet = hashCodeSetConstructor(temp)
-            with ThreadPoolExecutor(max_workers=100) as pool:
-                for chunk in chunked(yieldHashCode(hashCodeSet),500):
-                    futures = []
-                    for hashCode in chunk:
-                        futures.append(pool.submit(loopFunciton,hashCode,headURL,tableIdentity,retryCount,tables))
-                    list(concurrent.futures.as_completed(futures))
-            FruitPickingWeapons.foundFlag = False
+    if TRAVERSE_MODE:
+        #创建表格，并读取内容
+        if tableIdentity == 'C':
+            tables = pd.read_csv("./weaponMap/weaponData_C.csv",
+                                  converters={'identity':str,'weaponID':str,'hashCode':str})
+        if tableIdentity == 'W':
+            tables = pd.read_csv("./weaponMap/weaponData_W.csv",
+                                  converters={'identity':str,'weaponID':str,'hashCode':str})
+
+        hiatusTable = checkInfo(idBeginRange,idEndRange,tables)
+        logger.info("The number of missing IDs is " + hiatusTable.__len__().__str__())
+        #判断标识符进行操作
+        if tableIdentity == 'C' or tableIdentity == 'W':
+            while hiatusTable.__len__():
+                temp = f'{hiatusTable.pop():03d}'
+                logger.info('now is ' + temp)
+                hashCodeSet = hashCodeSetConstructor(temp)
+                with ThreadPoolExecutor(max_workers=100) as pool:
+                    for chunk in chunked(yieldHashCode(hashCodeSet),500):
+                        futures = []
+                        for hashCode in chunk:
+                            futures.append(pool.submit(loopFunciton,hashCode,headURL,tableIdentity,retryCount,tables))
+                        list(concurrent.futures.as_completed(futures))
+                FruitPickingWeapons.foundFlag = False
+        else:
+            logger.error("config file './var/weaponVar.csv' have a error tableIdentity. only allowed 'C' or 'W'.")
+            exit(-1)
     else:
-        logger.error("config file './var/weaponVar.csv' have a error tableIdentity. only allowed 'C' or 'W'.")
-        exit(-1)
+        tablesC = pd.read_csv("./weaponMap/weaponData_C.csv",
+                              converters={'identity':str,'weaponID':str,'hashCode':str})
+        tablesW = pd.read_csv("./weaponMap/weaponData_W.csv",
+                            converters={'identity':str,'weaponID':str,'hashCode':str})
+        pool = ThreadPoolExecutor(max_workers=50)
+        for index,row in tablesC.iterrows():
+            pool.submit(requestURL,'http://fruful.jp/img/game/asset/equip/full/',row['identity'],row['weaponID'],row['hashCode'],retryCount)
+        for index,row in tablesW.iterrows():
+            pool.submit(requestURL,'http://fruful.jp/img/game/asset/equip/full/',row['identity'],row['weaponID'],row['hashCode'],retryCount)

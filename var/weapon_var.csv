@@ -1,5 +1,6 @@
 var,value
-idBeginRange,1
+TRAVERSE_MODE,0
+idBeginRange,100
 idEndRange,999
-tableIdentity,W
+tableIdentity,C
 retryCount,6
