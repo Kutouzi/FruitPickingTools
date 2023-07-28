@@ -18,15 +18,20 @@ def yieldHashCode(hashCodeSet):
     while hashCodeSet:
         yield hashCodeSet.pop()
 
-def checkInfo(idBeginRange:int,idEndRange:int,table):
+def checkInfo(idBeginRange:int,idEndRange:int,table,otherTable):
     numList:set = set(range(idBeginRange,idEndRange+1))
     IDTable:set = set()
+    IDOtherTable:set = set()
     for index,row in table.iterrows():
         a = int(row['weaponID'])
         IDTable.add(a)
-    return set(numList) - set(IDTable)
+    for index,row in otherTable.iterrows():
+        a = int(row['weaponID'])
+        IDOtherTable.add(a)
+    resultSet = (set(numList) - set(IDTable)) - set(IDOtherTable)
+    return resultSet
 
-def testURL(headURL:str,tableIdentity:str,hashCode:str,retryCount:int,tables):
+def testURL(headURL:str,tableIdentity:str,hashCode:str,retryCount:int,tables,otherTables):
     for _ in range(retryCount):
         try:
             imageName = tableIdentity + hashCode + ".png"
@@ -41,6 +46,20 @@ def testURL(headURL:str,tableIdentity:str,hashCode:str,retryCount:int,tables):
                 return hashCode
             if data.status_code == 403:
                 #logger.warning("not found hashCode at " + hashCode)
+                if tableIdentity == 'C':
+                    antiTableIdentity = 'W'
+                else:
+                    antiTableIdentity = 'C'
+                imageName = antiTableIdentity + hashCode + ".png"
+                data = httpx.get(headURL + imageName,timeout=5)
+                if data.status_code == 200:
+                    lock.acquire()
+                    FruitPickingWeapons.foundFlag = True
+                    image = data.content
+                    saveResource(image,imageName,Path("./outputwp/"))
+                    insertTable(antiTableIdentity,hashCode,otherTables)
+                    lock.release()
+                    return hashCode
                 break
         except:
             logger.warning(f"tableIdentity: {tableIdentity} and hashCode:{hashCode}, request timeout, {_ + 1} retry")
@@ -103,12 +122,12 @@ def updateTable(tableIdentity,table):
     resultTable.to_csv(csvStr,index=False)
     logger.info(csvStr + " table updated")
 
-def loopFunciton(hashCode,headURL,tableIdentity,retryCount,tables):
+def loopFunciton(hashCode,headURL,tableIdentity,retryCount,tables,otherTables):
     lock.acquire()
     flag = FruitPickingWeapons.foundFlag
     lock.release()
     if flag == False :
-        hashCodeString = testURL(headURL,tableIdentity,hashCode,retryCount,tables)
+        hashCodeString = testURL(headURL,tableIdentity,hashCode,retryCount,tables,otherTables)
         if hashCodeString == '':
             pass
         else:
@@ -124,6 +143,12 @@ def saveResource(image,imageName:str,path:Path):
         logger.info("resource have been saved")
     except:
         logger.error("error writing to file: " + imageName)
+
+def traverseOutputFile(path:str):
+    aList = []
+    for root, dirs, files in os.walk(path,topdown=False):
+        aList.append(files)
+    return set(aList.pop())
 
 if __name__ == '__main__':
     #创建输出图像的文件夹
@@ -180,14 +205,24 @@ if __name__ == '__main__':
 
     if TRAVERSE_MODE:
         #创建表格，并读取内容
+        tablesC = pd.read_csv("./weaponMap/weaponData_C.csv",
+                              converters={'identity':str,'weaponID':str,'hashCode':str})
+        tablesW = pd.read_csv("./weaponMap/weaponData_W.csv",
+                          converters={'identity':str,'weaponID':str,'hashCode':str})
+        otherTables = ''
+        hiatusTable = ''
         if tableIdentity == 'C':
             tables = pd.read_csv("./weaponMap/weaponData_C.csv",
                                   converters={'identity':str,'weaponID':str,'hashCode':str})
+            #由于双表是互补的，因此还需要让对表做差
+            hiatusTable = checkInfo(idBeginRange,idEndRange,tables,tablesW)
+            otherTables = tablesW
         if tableIdentity == 'W':
             tables = pd.read_csv("./weaponMap/weaponData_W.csv",
                                   converters={'identity':str,'weaponID':str,'hashCode':str})
+            hiatusTable = checkInfo(idBeginRange,idEndRange,tables,tablesC)
+            otherTables = tablesC
 
-        hiatusTable = checkInfo(idBeginRange,idEndRange,tables)
         logger.info("The number of missing IDs is " + hiatusTable.__len__().__str__())
         #判断标识符进行操作
         if tableIdentity == 'C' or tableIdentity == 'W':
@@ -199,7 +234,7 @@ if __name__ == '__main__':
                     for chunk in chunked(yieldHashCode(hashCodeSet),500):
                         futures = []
                         for hashCode in chunk:
-                            futures.append(pool.submit(loopFunciton,hashCode,headURL,tableIdentity,retryCount,tables))
+                            futures.append(pool.submit(loopFunciton,hashCode,headURL,tableIdentity,retryCount,tables,otherTables))
                         list(concurrent.futures.as_completed(futures))
                 FruitPickingWeapons.foundFlag = False
         else:
@@ -210,8 +245,23 @@ if __name__ == '__main__':
                               converters={'identity':str,'weaponID':str,'hashCode':str})
         tablesW = pd.read_csv("./weaponMap/weaponData_W.csv",
                             converters={'identity':str,'weaponID':str,'hashCode':str})
+        OutputSet = traverseOutputFile("./outputwpf/")
+        idSet = set()
+        relSet = set()
+        for _ in OutputSet:
+            idSet.add(_[1:4])
+        for index,row in tablesC.iterrows():
+            relSet.add(row['weaponID'])
+        requestSetC = set(relSet) - set(idSet)
+        relSet.clear()
+        for index,row in tablesW.iterrows():
+            relSet.add(row['weaponID'])
+        requestSetW = set(relSet) - set(idSet)
+
         pool = ThreadPoolExecutor(max_workers=50)
         for index,row in tablesC.iterrows():
-            pool.submit(requestURL,'http://fruful.jp/img/game/asset/equip/full/',row['identity'],row['weaponID'],row['hashCode'],retryCount)
+            if row['weaponID'] in requestSetC:
+                pool.submit(requestURL,'http://fruful.jp/img/game/asset/equip/full/',row['identity'],row['weaponID'],row['hashCode'],retryCount)
         for index,row in tablesW.iterrows():
-            pool.submit(requestURL,'http://fruful.jp/img/game/asset/equip/full/',row['identity'],row['weaponID'],row['hashCode'],retryCount)
+            if row['weaponID'] in requestSetW:
+                pool.submit(requestURL,'http://fruful.jp/img/game/asset/equip/full/',row['identity'],row['weaponID'],row['hashCode'],retryCount)
