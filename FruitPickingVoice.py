@@ -71,11 +71,8 @@ if __name__ == '__main__':
     TRAVERSE_EVENT = True
     OutputSet = set()
 
-
     tables = pd.read_csv("./charaMap/charaData.csv",
                          converters={'charaID':str,'charaFileID':str,'favorability':str,'randomCode':str})
-
-
 
     if TRAVERSE_EVENT == True:
         headURL = 'http://fruful.jp/img/game/chara/event/'
@@ -102,7 +99,7 @@ if __name__ == '__main__':
         OutputSet.remove('')
         charaSet = set()
         for index,row in tables.iterrows():
-            if not row['charaID'] in OutputSet:
+            if not row['charaID'] in OutputSet and not row['favorability'] == '0' and not row['favorability'] == '':
                 charaSet.add(row['charaID'] + row['charaFileID'])
         with ThreadPoolExecutor(max_workers=50) as pool:
             for chunk in chunked(yieldCharaSet(charaSet),25):
