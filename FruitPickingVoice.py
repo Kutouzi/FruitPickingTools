@@ -69,18 +69,26 @@ if __name__ == '__main__':
     #初始化变量
     retryCount = 12
     TRAVERSE_EVENT = True
+    OutputSet = set()
 
 
     tables = pd.read_csv("./charaMap/charaData.csv",
                          converters={'charaID':str,'charaFileID':str,'favorability':str,'randomCode':str})
+
+
+
     if TRAVERSE_EVENT == True:
         headURL = 'http://fruful.jp/img/game/chara/event/'
+        for root, dirs, files in os.walk('./outputv/',topdown=False):
+            OutputSet.add(root[10:13])
+        OutputSet.remove('')
         charaSet = set()
         for index,row in tables.iterrows():
-            if row['randomCode'].__len__() > 5:
-                charaSet.add(row['charaID'] + row['charaFileID'] + '/' + row['favorability']+row['randomCode']+"_R")
-            else:
-                charaSet.add(row['charaID'] + row['charaFileID'] + '/'+ row['favorability']+row['randomCode']+row['charaID']+"_R")
+            if not row['charaID'] in OutputSet and not row['favorability'] == '0' and not row['favorability'] == '':
+                if row['randomCode'].__len__() > 5:
+                    charaSet.add(row['charaID'] + row['charaFileID'] + '/' + row['favorability']+row['randomCode']+"_R")
+                else:
+                    charaSet.add(row['charaID'] + row['charaFileID'] + '/'+ row['favorability']+row['randomCode']+row['charaID']+"_R")
         with ThreadPoolExecutor(max_workers=100) as pool:
             for chunk in chunked(yieldCharaSet(charaSet),25):
                 futures = []
@@ -89,9 +97,13 @@ if __name__ == '__main__':
                 list(concurrent.futures.as_completed(futures))
     else:
         headURL = 'http://fruful.jp/img/game/chara/voice/'
+        for root, dirs, files in os.walk('./outputnv/',topdown=False):
+            OutputSet.add(root[10:13])
+        OutputSet.remove('')
         charaSet = set()
         for index,row in tables.iterrows():
-            charaSet.add(row['charaID'] + row['charaFileID'])
+            if not row['charaID'] in OutputSet:
+                charaSet.add(row['charaID'] + row['charaFileID'])
         with ThreadPoolExecutor(max_workers=50) as pool:
             for chunk in chunked(yieldCharaSet(charaSet),25):
                 futures = []
