@@ -27,6 +27,7 @@ def getCG(defURL:str, charaID:str, charaFileID:str, randomCode:str, TRAVERSE_MOD
                 # 保存cg文件
                 table=pd.read_csv(BytesIO(data.content)).fillna('')
                 imageCollection = set(it for it in table['background'] if it.startswith('HCG'))
+                backgroundCollection = set(it for it in table['background'] if not it.startswith('HCG'))
                 if imageCollection.__len__() > 0:
                     for it in imageCollection:
                         imageName = it + ".jpg"
@@ -34,12 +35,25 @@ def getCG(defURL:str, charaID:str, charaFileID:str, randomCode:str, TRAVERSE_MOD
                         for count in range(retryCount):
                             try:
                                 image = httpx.get(imageURL).content
-                                Util.saveResource(image,charaID,imageName,favorability)
+                                Util.saveResource(image,charaID,charaFileID,randomCode,favorability,imageName,isOldCg,isMovie=False)
                                 break
                             except:
                                 pass
                         else:
                             logger.warning(f"get image {imageName} timeout")
+                    if backgroundCollection.__len__() > 0:
+                        for it in backgroundCollection:
+                            backgroundName = it + ".jpg"
+                            backgroundURL =  'http://fruful.jp/img/game/asset/background/event/' + backgroundName
+                            for count in range(retryCount):
+                                try:
+                                    background = httpx.get(backgroundURL).content
+                                    Util.saveBGResource(background,backgroundName)
+                                    break
+                                except:
+                                    pass
+                            else:
+                                logger.warning(f"get image {backgroundName} timeout")
                     return 0
                 else:
                     movieCollection = set(it.split('_')[0] for it in table['movie'] if it)
@@ -50,7 +64,7 @@ def getCG(defURL:str, charaID:str, charaFileID:str, randomCode:str, TRAVERSE_MOD
                             for count in range(retryCount):
                                 try:
                                     movie = httpx.get(movieURL).content
-                                    Util.saveResource(movie,charaID,movieName,favorability)
+                                    Util.saveResource(movie,charaID,charaFileID,randomCode,favorability,movieName,isOldCg,isMovie=True)
                                     break
                                 except:
                                     logger.warning(f"get movie {movieName} timeout")

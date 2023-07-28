@@ -67,7 +67,7 @@ def noTraverseMode(tables, TRAVERSE_MODE:bool, defURL:str, retryCount:int, silen
         randomCode = row['randomCode']
         charaID = row['charaID']
         charaFileID = row['charaFileID']
-        if charaID in OutputSet:
+        if charaID+charaFileID in OutputSet:
             logger.warning(charaID + r" data has exist in ./output")
             continue
         if row['favorability'] != '' and randomCode != '':

@@ -83,8 +83,29 @@ def updateTable(table):
     resultTable.to_csv("./charaMap/charaData.csv",index=False)
     print("charaData.csv table updated")
 
-def saveResource(resource,charaID:str,resourceName:str,favorability:str):
-    path = Path("./output/") / charaID / favorability
+def saveBGResource(resource,resourceName):
+    path = Path('./outputbg')
+    try:
+        path.mkdir(parents=True,exist_ok=True)
+    except:
+        print("error creating directory: " + path.__str__())
+    try:
+        (path / (resourceName)).write_bytes(resource)
+    except:
+        print("error writing to file: " + resourceName)
+    return 0
+#image,charaID,charaFileID,randomCode,favorability,imageName
+def saveResource(resource,charaID:str,charaFileID:str,randomCode:str,favorability:str,resourceName:str,isOldCg,isMovie):
+    if isMovie:
+        if isOldCg:
+            path = Path("./output/") / (charaID+charaFileID) / (favorability+randomCode+'_R') / Path("./movie")
+        else:
+            path = Path("./output/") / (charaID+charaFileID) / (favorability+randomCode+charaID+'_R') / Path("./movie")
+    else:
+        if isOldCg:
+            path = Path("./output/") / (charaID+charaFileID) / (favorability+randomCode+'_R') / Path("./images")
+        else:
+            path = Path("./output/") / (charaID+charaFileID) / (favorability+randomCode+charaID+'_R') / Path("./images")
     try:
         path.mkdir(parents=True,exist_ok=True)
     except:

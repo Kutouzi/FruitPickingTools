@@ -6,13 +6,14 @@ from loguru import logger
 logger.add('./logs/FruitPickingToolsLog_{time}.log', format="{name} {level} {message}", level="DEBUG", rotation='5 MB', encoding='utf-8')
 
 if __name__ == '__main__':
-    if os.path.exists("./output"):
+    if os.path.exists("./output") and os.path.exists("./outputbg"):
         pass
     else:
         try:
             os.mkdir("./output")
+            os.mkdir("./outputbg")
         except:
-            print(r"cant create directory './output'")
+            print(r"cant create directory './output' and './outputbg'")
             exit(-1)
 
     tables = pd.read_csv("./charaMap/charaData.csv",
