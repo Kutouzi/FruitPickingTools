@@ -73,6 +73,7 @@ def requestURL(headURL:str,tableIdentity:str,weaponID:str,hashCode:str,retryCoun
             if data.status_code == 200:
                 image = data.content
                 saveResource(image,imageName,Path("./outputwpf/"))
+                break
             if data.status_code == 403:
                 logger.warning("not found resource at " + hashCode)
                 break
