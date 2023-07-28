@@ -22,9 +22,10 @@ def requestURL(headURL,retryCount,chara,TRAVERSE_EVENT):
             try:
                 if TRAVERSE_EVENT:
                     voiceName = f'{arr:03d}' + ".m4a"
+                    data = httpx.get(headURL + chara+'/voice/'+voiceName,timeout=5)
                 else:
                     voiceName = "S" + f'{arr:03d}' + ".m4a"
-                data = httpx.get(headURL + chara+'/'+voiceName,timeout=5)
+                    data = httpx.get(headURL + chara+'/'+voiceName,timeout=5)
                 if data.status_code == 200:
                     voice = data.content
                     if TRAVERSE_EVENT:
@@ -40,7 +41,7 @@ def requestURL(headURL,retryCount,chara,TRAVERSE_EVENT):
 
 def saveResource(voice,voiceName:str,path:Path,chara:str,TRAVERSE_EVENT):
     if TRAVERSE_EVENT:
-        path = (path / (chara[:7]) / (chara[7:]))
+        path = (path / (chara[:7]) / (chara[7:]) / Path('voice'))
     else:
         path = (path / chara )
     try:
@@ -55,7 +56,6 @@ def saveResource(voice,voiceName:str,path:Path,chara:str,TRAVERSE_EVENT):
         logger.error("error writing to file: " + voiceName)
 
 if __name__ == '__main__':
-    #创建输出图像的文件夹
     if os.path.exists("./outputv") and os.path.exists("./outputnv"):
         pass
     else:
@@ -67,8 +67,8 @@ if __name__ == '__main__':
             exit(-1)
 
     #初始化变量
-    retryCount = 120
-    TRAVERSE_EVENT = False
+    retryCount = 12
+    TRAVERSE_EVENT = True
 
 
     tables = pd.read_csv("./charaMap/charaData.csv",
@@ -81,7 +81,7 @@ if __name__ == '__main__':
                 charaSet.add(row['charaID'] + row['charaFileID'] + '/' + row['favorability']+row['randomCode']+"_R")
             else:
                 charaSet.add(row['charaID'] + row['charaFileID'] + '/'+ row['favorability']+row['randomCode']+row['charaID']+"_R")
-        with ThreadPoolExecutor(max_workers=50) as pool:
+        with ThreadPoolExecutor(max_workers=100) as pool:
             for chunk in chunked(yieldCharaSet(charaSet),25):
                 futures = []
                 for chara in chunk:
