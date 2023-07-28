@@ -48,7 +48,7 @@ if __name__ == '__main__':
         pass
     else:
         try:
-            os.mkdir("./outputv")
+            os.mkdir("./outpute")
         except:
             logger.error("cant create directory. please check permissions.")
             exit(-1)
@@ -59,12 +59,16 @@ if __name__ == '__main__':
                          converters={'charaID':str,'charaFileID':str,'favorability':str,'randomCode':str})
     headURL = 'http://fruful.jp/img/game/chara/event/'
     charaSet = set()
-
+    OutputSet = set()
+    for root, dirs, files in os.walk('./outpute/',topdown=False):
+        OutputSet.add(root[10:13])
+    OutputSet.remove('')
     for index,row in tables.iterrows():
-        if row['randomCode'].__len__() > 5:
-            charaSet.add(row['charaID'] + row['charaFileID'] + '/' + row['favorability']+row['randomCode']+"_R")
-        else:
-            charaSet.add(row['charaID'] + row['charaFileID'] + '/'+ row['favorability']+row['randomCode']+row['charaID']+"_R")
+        if not row['charaID'] in OutputSet and not row['favorability'] == '0' and not row['favorability'] == '':
+            if row['randomCode'].__len__() > 5:
+                charaSet.add(row['charaID'] + row['charaFileID'] + '/' + row['favorability']+row['randomCode']+"_R")
+            else:
+                charaSet.add(row['charaID'] + row['charaFileID'] + '/'+ row['favorability']+row['randomCode']+row['charaID']+"_R")
     with ThreadPoolExecutor(max_workers=50) as pool:
         for chunk in chunked(yieldCharaSet(charaSet),25):
             futures = []
