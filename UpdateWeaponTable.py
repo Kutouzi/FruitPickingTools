@@ -10,7 +10,7 @@ def traverseOutputFile(path:str):
     return set(aList.pop())
 
 if __name__ == '__main__':
-    OutputSet = traverseOutputFile("C:/Users/qq454/Desktop/game/assets/equip/icon/")
+    OutputSet = traverseOutputFile("./game/assets/equip/icon/")
     tablesC = pd.read_csv("./weaponMap/weaponData_C.csv",
                          converters={'identity':str,'weaponID':str,'hashCode':str})
     idSetC=set()
