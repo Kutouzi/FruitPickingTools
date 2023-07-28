@@ -15,16 +15,22 @@ def yieldCharaSet(charaSet):
     while charaSet:
         yield charaSet.pop()
 
-def requestURL(headURL,retryCount,chara):
+def requestURL(headURL,retryCount,chara,TRAVERSE_EVENT):
     maxArray = list(range(1,101))
     for arr in maxArray:
         for _ in range(retryCount):
             try:
-                voiceName = f'{arr:03d}' + ".m4a"
-                data = httpx.get(headURL + chara+'/voice/'+voiceName,timeout=5)
+                if TRAVERSE_EVENT:
+                    voiceName = f'{arr:03d}' + ".m4a"
+                else:
+                    voiceName = "S" + f'{arr:03d}' + ".m4a"
+                data = httpx.get(headURL + chara+'/'+voiceName,timeout=5)
                 if data.status_code == 200:
                     voice = data.content
-                    saveResource(voice,voiceName,Path("./outputv/"),chara)
+                    if TRAVERSE_EVENT:
+                        saveResource(voice,voiceName,Path("./outputv/"),chara,TRAVERSE_EVENT)
+                    else:
+                        saveResource(voice,voiceName,Path("./outputnv/"),chara,TRAVERSE_EVENT)
                     break
                 if data.status_code == 403:
                     logger.warning("not found resource at " + voiceName)
@@ -32,8 +38,11 @@ def requestURL(headURL,retryCount,chara):
             except:
                 logger.warning(f"charactor: {chara[:7]} at {arr}, request timeout, {_ + 1} retry")
 
-def saveResource(voice,voiceName:str,path:Path,chara:str):
-    path = (path / (chara[:7]) / (chara[7:]))
+def saveResource(voice,voiceName:str,path:Path,chara:str,TRAVERSE_EVENT):
+    if TRAVERSE_EVENT:
+        path = (path / (chara[:7]) / (chara[7:]))
+    else:
+        path = (path / chara )
     try:
         path.mkdir(parents=True,exist_ok=True)
     except:
@@ -47,19 +56,20 @@ def saveResource(voice,voiceName:str,path:Path,chara:str):
 
 if __name__ == '__main__':
     #创建输出图像的文件夹
-    if os.path.exists("./outputv"):
+    if os.path.exists("./outputv") and os.path.exists("./outputnv"):
         pass
     else:
         try:
             os.mkdir("./outputv")
+            os.mkdir("./outputnv")
         except:
             logger.error("cant create directory. please check permissions.")
             exit(-1)
 
     #初始化变量
     retryCount = 120
-    TRAVERSE_EVENT = True
-    headURLN = 'http://fruful.jp/img/game/asset/equip/icon/'
+    TRAVERSE_EVENT = False
+
 
     tables = pd.read_csv("./charaMap/charaData.csv",
                          converters={'charaID':str,'charaFileID':str,'favorability':str,'randomCode':str})
@@ -75,6 +85,16 @@ if __name__ == '__main__':
             for chunk in chunked(yieldCharaSet(charaSet),25):
                 futures = []
                 for chara in chunk:
-                    pool.submit(requestURL,headURL,retryCount,chara)
+                    pool.submit(requestURL,headURL,retryCount,chara,TRAVERSE_EVENT)
                 list(concurrent.futures.as_completed(futures))
-
+    else:
+        headURL = 'http://fruful.jp/img/game/chara/voice/'
+        charaSet = set()
+        for index,row in tables.iterrows():
+            charaSet.add(row['charaID'] + row['charaFileID'])
+        with ThreadPoolExecutor(max_workers=50) as pool:
+            for chunk in chunked(yieldCharaSet(charaSet),25):
+                futures = []
+                for chara in chunk:
+                    pool.submit(requestURL,headURL,retryCount,chara,TRAVERSE_EVENT)
+                list(concurrent.futures.as_completed(futures))
