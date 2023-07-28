@@ -8,7 +8,7 @@ from loguru import logger
 import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
 
-logger.add('./logs/FruitPickingVoiceLog_{time}.log', format="{name} {level} {message}", level="DEBUG", rotation='5 MB', encoding='utf-8')
+logger.add('./logs/FruitPickingEventLog_{time}.log', format="{name} {level} {message}", level="DEBUG", rotation='5 MB', encoding='utf-8')
 
 
 def yieldCharaSet(charaSet):
