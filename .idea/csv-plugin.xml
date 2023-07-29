@@ -10,6 +10,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\charaMap\charaNameHash.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\charaMap\fruful.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\var\var.csv">
           <value>
             <Attribute>
