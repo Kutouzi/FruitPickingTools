@@ -1,19 +1,45 @@
 ## FruitPickingTools
-一个可爬取ふるーつふるきゅーとHScene的工具
+一个可爬取ふるーつふるきゅーと资源的工具
+ふるーつふるきゅーと于2023年8月31日停止运营，停止后此工具将被弃用
+此项目已停更，请移步至新项目“FruitsSceneViewer”
 
->A tool for obtaining fruitsfulcute HScene
+>A tool for obtaining fruitsfulcute resource
+>ふるーつふるきゅーと will stop operating on August 31, 2023, and this tool will be deprecated after the stop
+>This project has been deprecated, please check the new project "FruitsSceneViewer"
 
 目前有的功能：
-1. 获取角色HScene储存于“./output”
-2. 获取角色立绘和高清立绘
-3. 猜测未知角色ID
-4. 猜测角色Hscene特殊码，需要调整配置文件“./var/var.csv”来开启
+1. 获取角色HScene（图片与视频）储存于“./output”
+2. 获取背景图片储存于“./outputbg”
+3. 获取泥石流角色图片储存于“./outputbo”
+4. 获取战斗立绘和技能立绘储存于“./outputbt”
+5. 获取角色事件剧本（仅40和100好感度）储存于“./outpute”
+6. 获取角色水果标志物图标储存于“./outputfic”
+7. 获取角色头像储存于“./outputic”
+8. 获取角色语音储存于“./outputnv”
+9. 获取角色事件语音储存于“./outputv”
+10. 获取角色Spine资源储存于“./outputsp”
+11. 获取角色立绘和全立绘储存于“./outputst”
+12. 获取武器图标储存于“./outputwp”
+13. 获取武器图储存于“./outputwpf”
+14. 猜测未知角色charaID和charaFile
+15. 猜测角色Hscene特殊码，需要调整配置文件“./var/var.csv”来开启
 
 >features:
->1. Obtain character HScene and Save in './output'
->2. Obtain character Stand and high-pixel Stand
->3. Guess the CharacterID of an unknown character
->4. Guess the randomCode for the character Hscene, it is necessary to adjust the configuration file "./var/var. csv" to enable
+>1. Obtain character HScene (picture and video) and save in './output'
+>2. Obtain background image and save it in "./outputbg"
+>3. Obtain mudslide character pictures and save it in "./outputbo"
+>4. Obtain combat stand and skill stand are save in "./outputbt"
+>5. Obtain character event scripts (only 40 and 100 favorability) save in "./outpute"
+>6. Obtain character fruit marker icons save in "./outputfic"
+>7. Obtain character avatars and save in "./outputtic"
+>8. Obtain the voice of the character and save it in "./outputnv"
+>9. Obtain the voice of the character event and save it in "./outputv"
+>10. Obtain character Spine resources and save in "./outputsp"
+>11. Obtain character stand and full stand and save in "./outputst"
+>12. Obtain weapon icons save in "./outputwp"
+>13. Obtain the weapon map save in "./outputwpf"
+>14. Guess the CharacterID of an unknown character
+>15. Guess the randomCode for the character Hscene, it is necessary to adjust the configuration file "./var/var. csv" to enable
 
 
 ### 环境搭建(Running Environment)
