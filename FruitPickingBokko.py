@@ -57,11 +57,15 @@ if __name__ == '__main__':
     retryCount = 6
     for root, dirs, files in os.walk('./outputbo/',topdown=False):
         if files.__len__() > 0:
-            OutputSet.add(files[:7])
+            for f in files:
+                OutputSet.add(f[:3])
         else:
             break
     if OutputSet.__len__() > 0 :
-        OutputSet.remove('')
+        try:
+            OutputSet.remove('')
+        except:
+            pass
     charaSet = set()
     for index,row in tables.iterrows():
         if not row['charaID'] in OutputSet and not row['favorability'] == '0' and not row['favorability'] == '':

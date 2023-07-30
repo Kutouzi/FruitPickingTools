@@ -95,7 +95,7 @@ if __name__ == '__main__':
                          converters={'charaID':str,'charaFileID':str,'favorability':str,'randomCode':str})
     OutputSet = set()
     retryCount = 6
-    IsCharaIcon = False
+    IsCharaIcon = True
 
 
     if IsCharaIcon :
@@ -115,11 +115,15 @@ if __name__ == '__main__':
     else:
         for root, dirs, files in os.walk('./outputfic/',topdown=False):
             if files.__len__() > 0:
-                OutputSet.add(files[:6])
+                for f in files:
+                    OutputSet.add(f[:3])
             else:
                 break
         if OutputSet.__len__() > 0:
-            OutputSet.remove('')
+            try:
+                OutputSet.remove('')
+            except:
+                pass
         charaSet = set()
         for index,row in tables.iterrows():
             if not row['charaID'] in OutputSet and not row['favorability'] == '0' and not row['favorability'] == '':
