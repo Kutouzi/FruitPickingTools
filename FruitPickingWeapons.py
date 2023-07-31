@@ -31,36 +31,38 @@ def checkInfo(idBeginRange:int,idEndRange:int,table,otherTable):
     resultSet = (set(numList) - set(IDTable)) - set(IDOtherTable)
     return resultSet
 
-def testURL(headURL:str,tableIdentity:str,hashCode:str,retryCount:int,tables,otherTables):
+def testURL(headURL:str,tableIdentity:str,hashCode:str,id:str,retryCount:int,tables,otherTables):
     for _ in range(retryCount):
         try:
-            imageName = tableIdentity + hashCode + ".png"
+            imageName = tableIdentity + id + hashCode + ".png"
             data = httpx.get(headURL + imageName,timeout=5)
             if data.status_code == 200:
                 lock.acquire()
                 FruitPickingWeapons.foundFlag = True
                 image = data.content
                 saveResource(image,imageName,Path("./outputwp/"))
-                insertTable(tableIdentity,hashCode,tables)
+                insertTable(tableIdentity,id,hashCode,tables)
                 lock.release()
-                return hashCode
+                return id+hashCode
             if data.status_code == 403:
-                #logger.warning("not found hashCode at " + hashCode)
+                #
                 if tableIdentity == 'C':
                     antiTableIdentity = 'W'
                 else:
                     antiTableIdentity = 'C'
-                imageName = antiTableIdentity + hashCode + ".png"
+                imageName = antiTableIdentity + id + hashCode + ".png"
                 data = httpx.get(headURL + imageName,timeout=5)
                 if data.status_code == 200:
                     lock.acquire()
                     FruitPickingWeapons.foundFlag = True
                     image = data.content
                     saveResource(image,imageName,Path("./outputwp/"))
-                    insertTable(antiTableIdentity,hashCode,otherTables)
+                    insertTable(antiTableIdentity,id,hashCode,otherTables)
                     lock.release()
-                    return hashCode
-                break
+                    return id+hashCode
+                if data.status_code == 403:
+                    #logger.warning("not found hashCode at " + id +hashCode)
+                    break
         except:
             logger.warning(f"tableIdentity: {tableIdentity} and hashCode:{hashCode}, request timeout, {_ + 1} retry")
     return ''
@@ -80,30 +82,23 @@ def requestURL(headURL:str,tableIdentity:str,weaponID:str,hashCode:str,retryCoun
         except:
             logger.warning(f"tableIdentity: {tableIdentity} and hashCode:{hashCode}, request timeout, {_ + 1} retry")
 
-def hashCodeSetConstructor(hiatusID:str):
+def hashCodeSetConstructor1000(hiatusID:str):
     codeSet:set = set()
     for randomFileID1 in range(65,90+1):
-        for randomFileID2 in range(48,57+1):
-            temp:str = hiatusID+chr(randomFileID1)+chr(randomFileID2)
+            temp:str = hiatusID+chr(randomFileID1)
             codeSet.add(temp)
-    for randomFileID1 in range(48,57+1):
-        for randomFileID2 in range(65,90+1):
-            temp:str = hiatusID+chr(randomFileID1)+chr(randomFileID2)
-            codeSet.add(temp)
-    for randomFileID1 in range(48,57+1):
-        for randomFileID2 in range(48,57+1):
-            temp:str = hiatusID+chr(randomFileID1)+chr(randomFileID2)
-            codeSet.add(temp)
+    return codeSet
+
+def hashCodeSetConstructor(hiatusID:str):
+    codeSet:set = set()
     for randomFileID1 in range(65,90+1):
         for randomFileID2 in range(65,90+1):
             temp:str = hiatusID+chr(randomFileID1)+chr(randomFileID2)
             codeSet.add(temp)
     return codeSet
 
-def insertTable(tableIdentity,hashCodeString:str,table):
+def insertTable(tableIdentity,weaponID,hashCode,table):
     #'identity':str,'weaponID':str,'hashCode':str
-    weaponID = hashCodeString[0:3]
-    hashCode = hashCodeString[3:]
     for index,row in table.iterrows():
         if  row['weaponID'] == weaponID and row['hashCode'] == '':
             row.at['hashCode'] = hashCode
@@ -123,12 +118,12 @@ def updateTable(tableIdentity,table):
     resultTable.to_csv(csvStr,index=False)
     logger.info(csvStr + " table updated")
 
-def loopFunciton(hashCode,headURL,tableIdentity,retryCount,tables,otherTables):
+def loopFunciton(hashCode,headURL,tableIdentity,id,retryCount,tables,otherTables):
     lock.acquire()
     flag = FruitPickingWeapons.foundFlag
     lock.release()
     if flag == False :
-        hashCodeString = testURL(headURL,tableIdentity,hashCode,retryCount,tables,otherTables)
+        hashCodeString = testURL(headURL,tableIdentity,hashCode,id,retryCount,tables,otherTables)
         if hashCodeString == '':
             pass
         else:
@@ -209,18 +204,18 @@ if __name__ == '__main__':
         tablesC = pd.read_csv("./weaponMap/weaponData_C.csv",
                               converters={'identity':str,'weaponID':str,'hashCode':str})
         tablesW = pd.read_csv("./weaponMap/weaponData_W.csv",
-                          converters={'identity':str,'weaponID':str,'hashCode':str})
+                              converters={'identity':str,'weaponID':str,'hashCode':str})
         otherTables = ''
         hiatusTable = ''
         if tableIdentity == 'C':
             tables = pd.read_csv("./weaponMap/weaponData_C.csv",
-                                  converters={'identity':str,'weaponID':str,'hashCode':str})
+                                 converters={'identity':str,'weaponID':str,'hashCode':str})
             #由于双表是互补的，因此还需要让对表做差
             hiatusTable = checkInfo(idBeginRange,idEndRange,tables,tablesW)
             otherTables = tablesW
         if tableIdentity == 'W':
             tables = pd.read_csv("./weaponMap/weaponData_W.csv",
-                                  converters={'identity':str,'weaponID':str,'hashCode':str})
+                                 converters={'identity':str,'weaponID':str,'hashCode':str})
             hiatusTable = checkInfo(idBeginRange,idEndRange,tables,tablesC)
             otherTables = tablesC
 
@@ -228,14 +223,20 @@ if __name__ == '__main__':
         #判断标识符进行操作
         if tableIdentity == 'C' or tableIdentity == 'W':
             while hiatusTable.__len__():
-                temp = f'{hiatusTable.pop():03d}'
-                logger.info('now is ' + temp)
-                hashCodeSet = hashCodeSetConstructor(temp)
+                id = hiatusTable.pop()
+                sid = ''
+                if id >= 1000:
+                    sid = f'{id:04d}'
+                    hashCodeSet = hashCodeSetConstructor1000('')
+                else:
+                    sid = f'{id:03d}'
+                    hashCodeSet = hashCodeSetConstructor('')
+                logger.info('now is ' + sid)
                 with ThreadPoolExecutor(max_workers=100) as pool:
                     for chunk in chunked(yieldHashCode(hashCodeSet),500):
                         futures = []
                         for hashCode in chunk:
-                            futures.append(pool.submit(loopFunciton,hashCode,headURL,tableIdentity,retryCount,tables,otherTables))
+                            futures.append(pool.submit(loopFunciton,hashCode,headURL,tableIdentity,sid,retryCount,tables,otherTables))
                         list(concurrent.futures.as_completed(futures))
                 FruitPickingWeapons.foundFlag = False
         else:
@@ -245,12 +246,14 @@ if __name__ == '__main__':
         tablesC = pd.read_csv("./weaponMap/weaponData_C.csv",
                               converters={'identity':str,'weaponID':str,'hashCode':str})
         tablesW = pd.read_csv("./weaponMap/weaponData_W.csv",
-                            converters={'identity':str,'weaponID':str,'hashCode':str})
+                              converters={'identity':str,'weaponID':str,'hashCode':str})
         OutputSet = traverseOutputFile("./outputwpf/")
         idSet = set()
         relSet = set()
         for _ in OutputSet:
             idSet.add(_[1:4])
+            if _[4:5].isdigit():
+                idSet.add(_[1:5])
         for index,row in tablesC.iterrows():
             relSet.add(row['weaponID'])
         requestSetC = set(relSet) - set(idSet)
