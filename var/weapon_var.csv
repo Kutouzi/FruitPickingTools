@@ -1,6 +1,6 @@
 var,value
 TRAVERSE_MODE,0
-idBeginRange,1
-idEndRange,1200
+idBeginRange,1100
+idEndRange,1300
 tableIdentity,C
 retryCount,6
