@@ -78,7 +78,10 @@ if __name__ == '__main__':
         headURL = 'http://fruful.jp/img/game/chara/event/'
         for root, dirs, files in os.walk('./outputv/',topdown=False):
             OutputSet.add(root[10:13])
-        OutputSet.remove('')
+        try:
+            OutputSet.remove('')
+        except:
+            pass
         charaSet = set()
         for index,row in tables.iterrows():
             if not row['charaID'] in OutputSet and not row['favorability'] == '0' and not row['favorability'] == '':
@@ -95,8 +98,11 @@ if __name__ == '__main__':
     else:
         headURL = 'http://fruful.jp/img/game/chara/voice/'
         for root, dirs, files in os.walk('./outputnv/',topdown=False):
-            OutputSet.add(root[10:13])
-        OutputSet.remove('')
+            OutputSet.add(root[11:14])
+        try:
+            OutputSet.remove('')
+        except:
+            pass
         charaSet = set()
         for index,row in tables.iterrows():
             if not row['charaID'] in OutputSet and not row['favorability'] == '0' and not row['favorability'] == '':
