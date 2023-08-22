@@ -95,7 +95,7 @@ if __name__ == '__main__':
                          converters={'charaID':str,'charaFileID':str,'favorability':str,'randomCode':str})
     OutputSet = set()
     retryCount = 6
-    IsCharaIcon = False
+    IsCharaIcon = True
 
 
     if IsCharaIcon :

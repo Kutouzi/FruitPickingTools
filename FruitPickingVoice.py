@@ -68,7 +68,7 @@ if __name__ == '__main__':
 
     #初始化变量
     retryCount = 12
-    TRAVERSE_EVENT = True
+    TRAVERSE_EVENT = False
     OutputSet = set()
 
     tables = pd.read_csv("./charaMap/charaData.csv",
